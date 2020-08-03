@@ -1,0 +1,7 @@
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez
+ecto_psql_extras
+*.tar
