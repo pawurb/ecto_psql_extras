@@ -1,6 +1,6 @@
 # Ecto PSQL Extras
 
-Elixir port of [Rails PG Extras](https://github.com/pawurb/rails-pg-extras). The goal of this project is to provide powerful insights into the PostgreSQL database for Elixir apps that are not using the Heroku PostgreSQL plugin.
+Elixir port of [Rails PG Extras](https://github.com/pawurb/rails-pg-extras). The goal of this project is to provide powerful insights into the PostgreSQL database for Elixir apps.
 
 Queries can be used to obtain information about a Postgres instance, that may be useful when analyzing performance issues. This includes information about locks, index usage, buffer cache hit ratios and vacuum statistics. Elixir API enables developers to easily integrate the tool into e.g. automatic monitoring tasks.
 
