@@ -1,4 +1,4 @@
-# Ecto PSQL Extras
+# Ecto PSQL Extras [![Hex.pm](https://img.shields.io/hexpm/v/ecto_psql_extras.svg)](http://hex.pm/packages/ecto_psql_extras)
 
 Elixir port of [Rails PG Extras](https://github.com/pawurb/rails-pg-extras). The goal of this project is to provide powerful insights into the PostgreSQL database for Elixir apps.
 
