@@ -51,7 +51,11 @@ defmodule EctoPSQLExtras do
       if IEx.Info.info(n) |> Enum.at(0) |> elem(1) == "Decimal" do
         Decimal.to_float n
       else
-        n
+        if IEx.Info.info(n) |> Enum.at(0) |> elem(1) == "Postgrex.Interval" do
+          inspect n
+        else
+          n
+        end
       end
     end
   end
