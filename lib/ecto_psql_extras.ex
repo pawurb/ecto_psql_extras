@@ -48,14 +48,15 @@ defmodule EctoPSQLExtras do
 
   defp parse(list) do
     Enum.map list, fn n ->
-      if IEx.Info.info(n) |> Enum.at(0) |> elem(1) == "Decimal" do
-        Decimal.to_float n
-      else
-        if IEx.Info.info(n) |> Enum.at(0) |> elem(1) == "Postgrex.Interval" do
+      object_type = IEx.Info.info(n) |> Enum.at(0) |> elem(1)
+
+      cond do
+        object_type == "Decimal" ->
+          Decimal.to_float n
+        object_type == "Postgrex.Interval" ->
           inspect n
-        else
+        true ->
           n
-        end
       end
     end
   end
