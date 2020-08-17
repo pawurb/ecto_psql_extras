@@ -18,6 +18,8 @@ Are you riding on Rails? Check out the [Rails version](https://github.com/pawurb
  end
 ```
 
+Some of the queries (e.g., `calls` and `outliers`) require [pg_stat_statements](https://www.postgresql.org/docs/current/pgstatstatements.html) extension enabled.
+
 ## Usage
 
 You can run queries using a simple API:
