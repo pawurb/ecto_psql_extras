@@ -4,6 +4,8 @@ Elixir port of [Heroku PG Extras](https://github.com/heroku/heroku-pg-extras). T
 
 Queries can be used to obtain information about a Postgres instance, that may be useful when analyzing performance issues. This includes information about locks, index usage, buffer cache hit ratios and vacuum statistics. Elixir API enables developers to easily integrate the tool into e.g. automatic monitoring tasks.
 
+You can check out this blog post for detailed step by step tutorial on how to [optimize PostgreSQL using PG Extras library](https://pawelurbanek.com/postgresql-fix-performance).
+
 Are you riding on Rails? Check out the [Rails version](https://github.com/pawurb/rails-pg-extras).
 
 JavaScript is your thing? There's [NodeJS version](https://github.com/pawurb/node-postgres-extras) available.
