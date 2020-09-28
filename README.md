@@ -6,6 +6,8 @@ Queries can be used to obtain information about a Postgres instance, that may be
 
 Are you riding on Rails? Check out the [Rails version](https://github.com/pawurb/rails-pg-extras).
 
+JavaScript is your thing? There's [NodeJS version](https://github.com/pawurb/node-postgres-extras) available.
+
 ## Installation
 
 `mix.exs`
