@@ -1,24 +1,33 @@
 defmodule EctoPSQLExtras.LongRunningQueries do
-  def title do
-    "All queries longer than five minutes by descending duration"
+  @behaviour EctoPSQLExtras
+
+  def info do
+    %{
+      title: "All queries longer than five minutes by descending duration",
+      columns: [
+        %{name: :pid, type: :int},
+        %{name: :duration, type: :interval},
+        %{name: :query, type: :string}
+      ]
+    }
   end
 
   def query do
-"""
-/* All queries longer than five minutes by descending duration */
+    """
+    /* All queries longer than five minutes by descending duration */
 
-SELECT
-  pid,
-  now() - pg_stat_activity.query_start AS duration,
-  query AS query
-FROM
-  pg_stat_activity
-WHERE
-  pg_stat_activity.query <> ''::text
-  AND state <> 'idle'
-  AND now() - pg_stat_activity.query_start > interval '5 minutes'
-ORDER BY
-  now() - pg_stat_activity.query_start DESC;
-"""
+    SELECT
+      pid,
+      now() - pg_stat_activity.query_start AS duration,
+      query AS query
+    FROM
+      pg_stat_activity
+    WHERE
+      pg_stat_activity.query <> ''::text
+      AND state <> 'idle'
+      AND now() - pg_stat_activity.query_start > interval '5 minutes'
+    ORDER BY
+      now() - pg_stat_activity.query_start DESC;
+    """
   end
 end
