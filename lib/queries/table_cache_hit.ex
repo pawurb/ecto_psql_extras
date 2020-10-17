@@ -10,7 +10,7 @@ defmodule EctoPSQLExtras.TableCacheHit do
         %{name: :buffer_hits, type: :integer},
         %{name: :block_reads, type: :integer},
         %{name: :total_read, type: :integer},
-        %{name: :ratio, type: :string}
+        %{name: :ratio, type: :numeric}
       ]
     }
   end
@@ -25,8 +25,8 @@ defmodule EctoPSQLExtras.TableCacheHit do
       heap_blks_read AS block_reads,
       heap_blks_hit + heap_blks_read AS total_read,
       CASE (heap_blks_hit + heap_blks_read)::float
-        WHEN 0 THEN 'Insufficient data'
-        ELSE (heap_blks_hit / (heap_blks_hit + heap_blks_read)::float)::text
+        WHEN 0 THEN NULL
+        ELSE (heap_blks_hit / (heap_blks_hit + heap_blks_read)::float)
       END ratio
     FROM
       pg_statio_user_tables

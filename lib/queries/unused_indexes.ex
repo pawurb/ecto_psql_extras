@@ -7,7 +7,7 @@ defmodule EctoPSQLExtras.UnusedIndexes do
       columns: [
         %{name: :table, type: :string},
         %{name: :index, type: :string},
-        %{name: :index_size, type: :string},
+        %{name: :index_size, type: :bytes},
         %{name: :index_scans, type: :integer}
       ]
     }
@@ -24,7 +24,7 @@ defmodule EctoPSQLExtras.UnusedIndexes do
     SELECT
       schemaname || '.' || relname AS table,
       indexrelname AS index,
-      pg_size_pretty(pg_relation_size(i.indexrelid)) AS index_size,
+      pg_relation_size(i.indexrelid) AS index_size,
       idx_scan as index_scans
     FROM pg_stat_user_indexes ui
     JOIN pg_index i ON ui.indexrelid = i.indexrelid

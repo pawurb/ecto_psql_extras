@@ -4,13 +4,13 @@ defmodule EctoPSQLExtras.Bloat do
   def info do
     %{
       title: "Table and index bloat in your database ordered by most wasteful",
-      order_by: [raw_waste: :desc, bloat: :desc],
+      order_by: [waste: :desc, bloat: :desc],
       columns: [
         %{name: :type, type: :string},
         %{name: :schemaname, type: :string},
         %{name: :object_name, type: :string},
         %{name: :bloat, type: :numeric},
-        %{name: :waste, type: :string}
+        %{name: :waste, type: :bytes}
       ]
     }
   end
@@ -59,14 +59,14 @@ defmodule EctoPSQLExtras.Bloat do
       JOIN pg_class c2 ON c2.oid = i.indexrelid
     )
     SELECT
-      type, schemaname, object_name, bloat, pg_size_pretty(raw_waste) as waste
+      type, schemaname, object_name, bloat, waste
     FROM
     (SELECT
       'table' as type,
       schemaname,
       tablename as object_name,
       ROUND(CASE WHEN otta=0 THEN 0.0 ELSE table_bloat.relpages/otta::numeric END,1) AS bloat,
-      CASE WHEN relpages < otta THEN '0' ELSE (bs*(table_bloat.relpages-otta)::bigint)::bigint END AS raw_waste
+      CASE WHEN relpages < otta THEN 0 ELSE (bs*(table_bloat.relpages-otta)::bigint)::bigint END AS waste
     FROM
       table_bloat
         UNION
@@ -75,10 +75,10 @@ defmodule EctoPSQLExtras.Bloat do
       schemaname,
       tablename || '::' || iname as object_name,
       ROUND(CASE WHEN iotta=0 OR ipages=0 THEN 0.0 ELSE ipages/iotta::numeric END,1) AS bloat,
-      CASE WHEN ipages < iotta THEN '0' ELSE (bs*(ipages-iotta))::bigint END AS raw_waste
+      CASE WHEN ipages < iotta THEN 0 ELSE (bs*(ipages-iotta))::bigint END AS waste
     FROM
       index_bloat) bloat_summary
-    ORDER BY raw_waste DESC, bloat DESC;
+    ORDER BY waste DESC, bloat DESC;
     """
   end
 end

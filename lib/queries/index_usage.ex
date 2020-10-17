@@ -6,7 +6,7 @@ defmodule EctoPSQLExtras.IndexUsage do
       title: "Index hit rate (effective databases are at 99% and up)",
       columns: [
         %{name: :relname, type: :string},
-        %{name: :percent_of_times_index_used, type: :string},
+        %{name: :percent_of_times_index_used, type: :numeric},
         %{name: :rows_in_table, type: :int}
       ]
     }
@@ -18,8 +18,8 @@ defmodule EctoPSQLExtras.IndexUsage do
 
     SELECT relname,
        CASE idx_scan
-         WHEN 0 THEN 'Insufficient data'
-         ELSE (100 * idx_scan / (seq_scan + idx_scan))::text
+         WHEN 0 THEN NULL
+         ELSE (100 * idx_scan / (seq_scan + idx_scan))
        END percent_of_times_index_used,
        n_live_tup rows_in_table
      FROM

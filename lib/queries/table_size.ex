@@ -7,7 +7,7 @@ defmodule EctoPSQLExtras.TableSize do
       order_by: [size: :desc],
       columns: [
         %{name: :name, type: :string},
-        %{name: :size, type: :string}
+        %{name: :size, type: :bytes}
       ]
     }
   end
@@ -16,8 +16,7 @@ defmodule EctoPSQLExtras.TableSize do
     """
     /* Size of the tables (excluding indexes), descending by size */
 
-    SELECT c.relname AS name,
-      pg_size_pretty(pg_table_size(c.oid)) AS size
+    SELECT c.relname AS name, pg_table_size(c.oid) AS size
     FROM pg_class c
     LEFT JOIN pg_namespace n ON (n.oid = c.relnamespace)
     WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
