@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.LongRunningQueries do
   def info do
     %{
       title: "All queries longer than five minutes by descending duration",
+      order_by: [duration: :desc],
       columns: [
         %{name: :pid, type: :int},
         %{name: :duration, type: :interval},

@@ -55,14 +55,15 @@ defmodule EctoPSQLExtras do
   end
 
   defp format(:ascii, info, result) do
+    names = Enum.map(info.columns, & &1.name)
+    types = Enum.map(info.columns, & &1.type)
+
     rows =
       if result.rows == [] do
         [["No results", nil]]
       else
-        Enum.map(result.rows, &parse_row/1)
+        Enum.map(result.rows, &parse_row(&1, types))
       end
-
-    names = Enum.map(info.columns, & &1.name)
 
     rows
     |> TableRex.quick_render!(names, info.title)
@@ -73,11 +74,51 @@ defmodule EctoPSQLExtras do
     result
   end
 
-  defp parse_row(list) do
-    Enum.map(list, &parse_column/1)
+  defp parse_row(list, types) do
+    list
+    |> Enum.zip(types)
+    |> Enum.map(&format_value/1)
   end
 
-  defp parse_column(%struct{} = decimal) when struct == Decimal, do: Decimal.to_float(decimal)
-  defp parse_column(binary) when is_binary(binary), do: binary
-  defp parse_column(other), do: inspect(other)
+  @doc false
+  def format_value({integer, :bytes}) when is_integer(integer), do: format_bytes(integer)
+  def format_value({%Postgrex.Interval{} = interval, _}), do: format_interval(interval)
+  def format_value({%Decimal{} = decimal, _}), do: Decimal.to_float(decimal)
+  def format_value({nil, _}), do: ""
+  def format_value({binary, _}) when is_binary(binary), do: binary
+  def format_value({other, _}), do: inspect(other)
+
+  defp format_bytes(bytes) do
+    cond do
+      bytes >= memory_unit(:TB) -> format_bytes(bytes, :TB)
+      bytes >= memory_unit(:GB) -> format_bytes(bytes, :GB)
+      bytes >= memory_unit(:MB) -> format_bytes(bytes, :MB)
+      bytes >= memory_unit(:KB) -> format_bytes(bytes, :KB)
+      true -> format_bytes(bytes, :B)
+    end
+  end
+
+  defp format_bytes(bytes, :B) when is_integer(bytes), do: "#{bytes} bytes"
+
+  defp format_bytes(bytes, unit) when is_integer(bytes) do
+    value = bytes / memory_unit(unit)
+    "#{:erlang.float_to_binary(value, decimals: 1)} #{unit}"
+  end
+
+  defp memory_unit(:TB), do: 1024 * 1024 * 1024 * 1024
+  defp memory_unit(:GB), do: 1024 * 1024 * 1024
+  defp memory_unit(:MB), do: 1024 * 1024
+  defp memory_unit(:KB), do: 1024
+
+  defp format_interval(%{months: months, days: days, secs: secs, microsecs: microsecs}) do
+    optional_interval(months, :month) <>
+      optional_interval(days, :day) <>
+      "#{secs}." <>
+      (microsecs |> Integer.to_string() |> String.pad_leading(6, "0")) <>
+      " seconds"
+  end
+
+  defp optional_interval(0, _), do: ""
+  defp optional_interval(1, key), do: "1 #{key}, "
+  defp optional_interval(n, key), do: "#{n} #{key}s, "
 end

@@ -4,7 +4,7 @@ defmodule EctoPSQLExtras.Outliers do
   def info do
     %{
       title: "10 queries that have longest execution time in aggregate",
-      order_by: [total_time: :desc],
+      order_by: [exec_time: :desc],
       limit: 10,
       columns: [
         %{name: :query, type: :string},
