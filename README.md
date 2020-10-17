@@ -178,7 +178,7 @@ This command displays all the current locks, regardless of their type.
 
 EctoPSQLExtras.query(:outliers, YourApp.Repo)
 
-                   qry                   |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
+                   query                 |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
 -----------------------------------------+------------------+----------------+-------------+--------------
  SELECT * FROM archivable_usage_events.. | 154:39:26.431466 | 72.2%          | 34,211,877  | 00:00:00
  COPY public.archivable_usage_events (.. | 50:38:33.198418  | 23.6%          | 13          | 13:34:21.00108
@@ -200,7 +200,7 @@ Typically, an efficient query will have an appropriate ratio of calls to total e
 
 EctoPSQLExtras.query(:calls, YourApp.Repo)
 
-                   qry                   |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
+                   query                 |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
 -----------------------------------------+------------------+----------------+-------------+--------------
  SELECT * FROM usage_events WHERE (alp.. | 01:18:11.073333  | 0.6%           | 102,120,780 | 00:00:00
  BEGIN                                   | 00:00:51.285988  | 0.0%           | 47,288,662  | 00:00:00

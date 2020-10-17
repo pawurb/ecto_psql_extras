@@ -20,7 +20,7 @@ defmodule EctoPSQLExtras.Outliers do
     """
     /* 10 queries that have longest execution time in aggregate */
 
-    SELECT query AS qry,
+    SELECT query AS query,
     interval '1 millisecond' * total_time AS exec_time,
     to_char((total_time/sum(total_time) OVER()) * 100, 'FM90D0') || '%'  AS prop_exec_time,
     to_char(calls, 'FM999G999G999G990') AS ncalls,
