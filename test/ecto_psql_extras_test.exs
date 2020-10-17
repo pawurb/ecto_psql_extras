@@ -36,24 +36,12 @@ defmodule EctoPSQLExtrasTest do
     assert format_value({1024 * 1024 * 1024 * 1024 * 1024, :bytes}) == "1024.0 TB"
   end
 
-  test "format interval" do
+  test "format structs" do
+    assert format_value({Decimal.new("1.23"), :d}) ==
+             "1.23"
+
     assert format_value({%Postgrex.Interval{secs: 0}, :i}) ==
-             "0.000000 seconds"
-
-    assert format_value({%Postgrex.Interval{secs: 1, microsecs: 123}, :i}) ==
-             "1.000123 seconds"
-
-    assert format_value({%Postgrex.Interval{secs: 1, microsecs: 654_321}, :i}) ==
-             "1.654321 seconds"
-
-    assert format_value({%Postgrex.Interval{days: 1, secs: 1, microsecs: 654_321}, :i}) ==
-             "1 day, 1.654321 seconds"
-
-    assert format_value({%Postgrex.Interval{days: 2, secs: 1, microsecs: 654_321}, :i}) ==
-             "2 days, 1.654321 seconds"
-
-    assert format_value({%Postgrex.Interval{months: 1, days: 1, secs: 1, microsecs: 654_321}, :i}) ==
-             "1 month, 1 day, 1.654321 seconds"
+             "0 seconds"
 
     assert format_value({%Postgrex.Interval{months: 2, days: 2, secs: 1, microsecs: 654_321}, :i}) ==
              "2 months, 2 days, 1.654321 seconds"

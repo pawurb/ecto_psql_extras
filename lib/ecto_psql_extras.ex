@@ -81,10 +81,11 @@ defmodule EctoPSQLExtras do
   end
 
   @doc false
-  def format_value({integer, :bytes}) when is_integer(integer), do: format_bytes(integer)
-  def format_value({%Postgrex.Interval{} = interval, _}), do: format_interval(interval)
-  def format_value({%Decimal{} = decimal, _}), do: Decimal.to_float(decimal)
+  def format_value({%struct{} = value, _}) when struct in [Decimal, Postgrex.Interval],
+    do: struct.to_string(value)
+
   def format_value({nil, _}), do: ""
+  def format_value({integer, :bytes}) when is_integer(integer), do: format_bytes(integer)
   def format_value({binary, _}) when is_binary(binary), do: binary
   def format_value({other, _}), do: inspect(other)
 
@@ -109,16 +110,4 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:GB), do: 1024 * 1024 * 1024
   defp memory_unit(:MB), do: 1024 * 1024
   defp memory_unit(:KB), do: 1024
-
-  defp format_interval(%{months: months, days: days, secs: secs, microsecs: microsecs}) do
-    optional_interval(months, :month) <>
-      optional_interval(days, :day) <>
-      "#{secs}." <>
-      (microsecs |> Integer.to_string() |> String.pad_leading(6, "0")) <>
-      " seconds"
-  end
-
-  defp optional_interval(0, _), do: ""
-  defp optional_interval(1, key), do: "1 #{key}, "
-  defp optional_interval(n, key), do: "#{n} #{key}s, "
 end

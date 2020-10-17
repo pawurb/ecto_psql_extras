@@ -20,7 +20,7 @@ defmodule EctoPSQLExtras.Mixfile do
     [
       {:table_rex, "~> 3.0.0"},
       {:ecto_sql, "~> 3.4"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, ">= 0.15.7"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
