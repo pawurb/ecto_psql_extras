@@ -49,7 +49,7 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`.
   """
   def query(name, repo, format \\ :ascii) do
-    query_module = queries()[name]
+    query_module = Map.fetch!(queries(), name)
     result = repo.query!(query_module.query)
     format(format, query_module.info, result)
   end
@@ -85,9 +85,14 @@ defmodule EctoPSQLExtras do
     do: struct.to_string(value)
 
   def format_value({nil, _}), do: ""
+  def format_value({number, :percent}), do: format_percent(number)
   def format_value({integer, :bytes}) when is_integer(integer), do: format_bytes(integer)
   def format_value({binary, _}) when is_binary(binary), do: binary
   def format_value({other, _}), do: inspect(other)
+
+  defp format_percent(number) do
+    number |> Kernel.*(100.0) |> Float.round(1) |> Float.to_string()
+  end
 
   defp format_bytes(bytes) do
     cond do
