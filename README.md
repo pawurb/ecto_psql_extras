@@ -1,4 +1,4 @@
-# Ecto PSQL Extras [![Hex.pm](https://img.shields.io/hexpm/v/ecto_psql_extras.svg)](http://hex.pm/packages/ecto_psql_extras)
+# Ecto PSQL Extras [![Hex.pm](https://img.shields.io/hexpm/v/ecto_psql_extras.svg)](http://hex.pm/packages/ecto_psql_extras) ![CI](https://github.com/pawurb/ecto_psql_extras/workflows/CI/badge.svg)
 
 Elixir port of [Heroku PG Extras](https://github.com/heroku/heroku-pg-extras). The goal of this project is to provide powerful insights into the PostgreSQL database for Elixir apps that are not using the Heroku PostgreSQL plugin.
 
