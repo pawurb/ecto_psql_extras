@@ -5,7 +5,7 @@ defmodule EctoPSQLExtras.Calls do
     %{
       title: "10 queries that have the highest frequency of execution",
       limit: 10,
-      order_by: [ncalls: :desc],
+      order_by: [calls: :desc],
       columns: [
         %{name: :query, type: :string},
         %{name: :exec_time, type: :interval},
