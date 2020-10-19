@@ -5,7 +5,7 @@ defmodule EctoPSQLExtras.Locks do
     %{
       title: "Queries with active exclusive locks",
       columns: [
-        %{name: :procpid, type: :integer},
+        %{name: :pid, type: :integer},
         %{name: :relname, type: :string},
         %{name: :transactionid, type: :integer},
         %{name: :granted, type: :boolean},
