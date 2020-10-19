@@ -12,11 +12,11 @@ defmodule EctoPSQLExtras.Mixfile do
       description: description(),
       deps: deps(),
       package: package(),
-      source_url: @github_url
+      docs: docs()
     ]
   end
 
-  def deps() do
+  def deps do
     [
       {:table_rex, "~> 3.0.0"},
       {:ecto_sql, "~> 3.4"},
@@ -25,17 +25,25 @@ defmodule EctoPSQLExtras.Mixfile do
     ]
   end
 
-  defp description() do
+  defp description do
     """
     Ecto PostgreSQL database performance insights. Locks, index usage, buffer cache hit ratios, vacuum stats and more.
     """
   end
 
-  defp package() do
+  defp package do
     [
       maintainers: ["Pawel Urbanek"],
       licenses: ["MIT"],
       links: %{"GitHub" => @github_url}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      source_url: @github_url,
+      extras: ["README.md"]
     ]
   end
 end
