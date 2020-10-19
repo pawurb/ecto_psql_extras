@@ -46,4 +46,8 @@ defmodule EctoPSQLExtrasTest do
     assert format_value({%Postgrex.Interval{months: 2, days: 2, secs: 1, microsecs: 654_321}, :i}) ==
              "2 months, 2 days, 1.654321 seconds"
   end
+
+  test "format string" do
+    assert format_value({"Multiline \n\nstring", :string}) == "Multiline string"
+  end
 end
