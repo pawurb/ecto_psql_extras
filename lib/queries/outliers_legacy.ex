@@ -1,4 +1,4 @@
-defmodule EctoPSQLExtras.Outliers do
+defmodule EctoPSQLExtras.OutliersLegacy do
   @behaviour EctoPSQLExtras
 
   def info do
@@ -21,12 +21,12 @@ defmodule EctoPSQLExtras.Outliers do
     /* 10 queries that have longest execution time in aggregate */
 
     SELECT query AS query,
-    interval '1 millisecond' * total_exec_time AS exec_time,
-    (total_exec_time/sum(total_exec_time) OVER()) AS prop_exec_time,
+    interval '1 millisecond' * total_time AS exec_time,
+    (total_time/sum(total_time) OVER()) AS prop_exec_time,
     calls,
     interval '1 millisecond' * (blk_read_time + blk_write_time) AS sync_io_time
     FROM pg_stat_statements WHERE userid = (SELECT usesysid FROM pg_user WHERE usename = current_user LIMIT 1)
-    ORDER BY total_exec_time DESC
+    ORDER BY total_time DESC
     LIMIT 10;
     """
   end

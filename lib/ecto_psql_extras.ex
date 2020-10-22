@@ -15,12 +15,15 @@ defmodule EctoPSQLExtras do
   @doc """
   Returns all queries and their modules.
   """
-  def queries do
+  def queries(repo \\ nil) do
+    # Detect older versions of pg_stat_statements and use different column names
+    legacy = repo && pg_stat_statements_version(repo) < {1, 8, 0}
+
     %{
       bloat: EctoPSQLExtras.Bloat,
       blocking: EctoPSQLExtras.Blocking,
       cache_hit: EctoPSQLExtras.CacheHit,
-      calls: EctoPSQLExtras.Calls,
+      calls: if(legacy, do: EctoPSQLExtras.CallsLegacy, else: EctoPSQLExtras.Calls),
       extensions: EctoPSQLExtras.Extensions,
       table_cache_hit: EctoPSQLExtras.TableCacheHit,
       index_cache_hit: EctoPSQLExtras.IndexCacheHit,
@@ -30,7 +33,7 @@ defmodule EctoPSQLExtras do
       all_locks: EctoPSQLExtras.AllLocks,
       long_running_queries: EctoPSQLExtras.LongRunningQueries,
       mandelbrot: EctoPSQLExtras.Mandelbrot,
-      outliers: EctoPSQLExtras.Outliers,
+      outliers: if(legacy, do: EctoPSQLExtras.OutliersLegacy, else: EctoPSQLExtras.Outliers),
       records_rank: EctoPSQLExtras.RecordsRank,
       seq_scans: EctoPSQLExtras.SeqScans,
       table_indexes_size: EctoPSQLExtras.TableIndexesSize,
@@ -49,7 +52,7 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`.
   """
   def query(name, repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(), name)
+    query_module = Map.fetch!(queries(repo), name)
     result = repo.query!(query_module.query)
     format(format, query_module.info, result)
   end
@@ -116,4 +119,13 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:GB), do: 1024 * 1024 * 1024
   defp memory_unit(:MB), do: 1024 * 1024
   defp memory_unit(:KB), do: 1024
+
+  def pg_stat_statements_version(repo) do
+    [[value]] =
+      repo.query!(
+        "select installed_version from pg_available_extensions where name='pg_stat_statements'"
+      ).rows
+
+    Postgrex.Utils.parse_version(value)
+  end
 end

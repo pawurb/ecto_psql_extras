@@ -21,8 +21,8 @@ defmodule EctoPSQLExtras.Calls do
     /* 10 queries that have the highest frequency of execution */
 
     SELECT query AS query,
-    interval '1 millisecond' * total_time AS exec_time,
-    (total_time/sum(total_time) OVER())  AS exec_time_ratio,
+    interval '1 millisecond' * total_exec_time AS exec_time,
+    (total_exec_time/sum(total_exec_time) OVER())  AS exec_time_ratio,
     calls,
     interval '1 millisecond' * (blk_read_time + blk_write_time) AS sync_io_time
     FROM pg_stat_statements WHERE userid = (SELECT usesysid FROM pg_user WHERE usename = current_user LIMIT 1)
