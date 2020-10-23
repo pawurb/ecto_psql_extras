@@ -126,6 +126,6 @@ defmodule EctoPSQLExtras do
         "select installed_version from pg_available_extensions where name='pg_stat_statements'"
       ).rows
 
-    Postgrex.Utils.parse_version(value)
+    value && Postgrex.Utils.parse_version(value)
   end
 end
