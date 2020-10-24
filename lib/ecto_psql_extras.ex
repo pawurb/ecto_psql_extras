@@ -14,16 +14,15 @@ defmodule EctoPSQLExtras do
 
   @doc """
   Returns all queries and their modules.
+
+  If a repository is given, it will be queried for extensions support
+  and special queries will be included if available.
   """
   def queries(repo \\ nil) do
-    # Detect older versions of pg_stat_statements and use different column names
-    legacy = repo && pg_stat_statements_version(repo) < {1, 8, 0}
-
     %{
       bloat: EctoPSQLExtras.Bloat,
       blocking: EctoPSQLExtras.Blocking,
       cache_hit: EctoPSQLExtras.CacheHit,
-      calls: if(legacy, do: EctoPSQLExtras.CallsLegacy, else: EctoPSQLExtras.Calls),
       extensions: EctoPSQLExtras.Extensions,
       table_cache_hit: EctoPSQLExtras.TableCacheHit,
       index_cache_hit: EctoPSQLExtras.IndexCacheHit,
@@ -33,7 +32,6 @@ defmodule EctoPSQLExtras do
       all_locks: EctoPSQLExtras.AllLocks,
       long_running_queries: EctoPSQLExtras.LongRunningQueries,
       mandelbrot: EctoPSQLExtras.Mandelbrot,
-      outliers: if(legacy, do: EctoPSQLExtras.OutliersLegacy, else: EctoPSQLExtras.Outliers),
       records_rank: EctoPSQLExtras.RecordsRank,
       seq_scans: EctoPSQLExtras.SeqScans,
       table_indexes_size: EctoPSQLExtras.TableIndexesSize,
@@ -44,6 +42,29 @@ defmodule EctoPSQLExtras do
       vacuum_stats: EctoPSQLExtras.VacuumStats,
       kill_all: EctoPSQLExtras.KillAll
     }
+    |> Map.merge(pg_stat_statements_queries(repo))
+  end
+
+  @pg_stat_statements_query "select installed_version from pg_available_extensions where name='pg_stat_statements'"
+
+  defp pg_stat_statements_queries(repo) do
+    case repo && pg_stat_statements_version(repo) do
+      nil ->
+        %{}
+
+      vsn when vsn < {1, 8, 0} ->
+        %{calls: EctoPSQLExtras.CallsLegacy, outliers: EctoPSQLExtras.OutliersLegacy}
+
+      _vsn ->
+        %{calls: EctoPSQLExtras.Calls, outliers: EctoPSQLExtras.Outliers}
+    end
+  end
+
+  defp pg_stat_statements_version(repo) do
+    case repo.query!(@pg_stat_statements_query).rows do
+      [[value]] when is_binary(value) -> Postgrex.Utils.parse_version(value)
+      _ -> nil
+    end
   end
 
   @doc """
@@ -119,13 +140,4 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:GB), do: 1024 * 1024 * 1024
   defp memory_unit(:MB), do: 1024 * 1024
   defp memory_unit(:KB), do: 1024
-
-  def pg_stat_statements_version(repo) do
-    [[value]] =
-      repo.query!(
-        "select installed_version from pg_available_extensions where name='pg_stat_statements'"
-      ).rows
-
-    Postgrex.Utils.parse_version(value)
-  end
 end
