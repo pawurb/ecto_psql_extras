@@ -3,8 +3,15 @@ defmodule EctoPSQLExtrasTest do
 
   import EctoPSQLExtras
 
+  @optional_queries %{
+    calls: EctoPSQLExtras.Calls,
+    calls_legacy: EctoPSQLExtras.CallsLegacy,
+    outliers: EctoPSQLExtras.Outliers,
+    outliers_legacy: EctoPSQLExtras.OutliersLegacy
+  }
+
   test "all queries define info" do
-    for pair <- queries() do
+    for pair <- Map.merge(queries(), @optional_queries) do
       {name, module} = pair
       assert is_atom(name)
 
@@ -20,6 +27,49 @@ defmodule EctoPSQLExtrasTest do
         assert dir in [:asc, :desc]
         assert Enum.find(info.columns, &(&1.name == order_by))
       end
+    end
+  end
+
+  defmodule Repo do
+    def query!(_), do: %{rows: Process.get(Repo) || raise "no query result"}
+  end
+
+  describe "pg_stat_statements queries" do
+    test "are not included without repo" do
+      queries = queries(nil)
+      refute Map.has_key?(queries, :calls)
+      refute Map.has_key?(queries, :outliers)
+    end
+
+    test "are not included on repo without pg_stat_statements" do
+      Process.put(Repo, [[]])
+      queries = queries(Repo)
+      refute Map.has_key?(queries, :calls)
+      refute Map.has_key?(queries, :outliers)
+
+      Process.put(Repo, [[nil]])
+      queries = queries(Repo)
+      refute Map.has_key?(queries, :calls)
+      refute Map.has_key?(queries, :outliers)
+    end
+
+    test "includes legacy queries on early versions" do
+      Process.put(Repo, [["1.2.0"]])
+      queries = queries(Repo)
+      assert {:calls, EctoPSQLExtras.CallsLegacy} in queries
+      assert {:outliers, EctoPSQLExtras.OutliersLegacy} in queries
+    end
+
+    test "includes recent queries on later versions" do
+      Process.put(Repo, [["1.9.0"]])
+      queries = queries(Repo)
+      assert {:calls, EctoPSQLExtras.Calls} in queries
+      assert {:outliers, EctoPSQLExtras.Outliers} in queries
+
+      Process.put(Repo, [["2.1.0"]])
+      queries = queries(Repo)
+      assert {:calls, EctoPSQLExtras.Calls} in queries
+      assert {:outliers, EctoPSQLExtras.Outliers} in queries
     end
   end
 
