@@ -28,6 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.2
       - uses: actions/setup-elixir@v1.4.0
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
