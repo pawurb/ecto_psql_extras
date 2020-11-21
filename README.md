@@ -434,30 +434,24 @@ This command displays statistics related to vacuum operations for each table, in
 
 ### `kill_all`
 
-```
-
+```elixir
 EctoPSQLExtras.query(:kill_all, YourApp.Repo)
-
 ```
 
 This commands kills all the currently active connections to the database. It can be useful as a last resort when your database is stuck in a deadlock.
 
 ### `extensions`
 
-```
-
+```elixir
 EctoPSQLExtras.query(:extensions, YourApp.Repo)
-
 ```
 
 This command lists all the currently installed and available PostgreSQL extensions.
 
 ### `mandelbrot`
 
-```
-
+```elixir
 EctoPSQLExtras.query(:mandelbrot, YourApp.Repo)
-
 ```
 
 This command outputs the Mandelbrot set, calculated through SQL.
