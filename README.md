@@ -4,9 +4,11 @@ Elixir port of [Heroku PG Extras](https://github.com/heroku/heroku-pg-extras). T
 
 Queries can be used to obtain information about a Postgres instance, that may be useful when analyzing performance issues. This includes information about locks, index usage, buffer cache hit ratios and vacuum statistics. Elixir API enables developers to easily integrate the tool into e.g. automatic monitoring tasks.
 
+You can check out this blog post for detailed step by step tutorial on how to [optimize PostgreSQL using PG Extras library](https://pawelurbanek.com/postgresql-fix-performance).
+
 This library is an optional dependency of [Phoenix.LiveDashboard](https://hexdocs.pm/phoenix_live_dashboard/Phoenix.LiveDashboard.html). Check it out if you want to see SQL metrics in the UI instead of a command line interface.
 
-You can check out this blog post for detailed step by step tutorial on how to [optimize PostgreSQL using PG Extras library](https://pawelurbanek.com/postgresql-fix-performance).
+![Phoenix Ecto Dashboard](https://github.com/pawurb/ecto_psql_extras/raw/master/phoenix-dashboard.png)
 
 Alternative versions:
 
