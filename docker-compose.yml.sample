@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:11.5-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ecto_psql_extras_test
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
