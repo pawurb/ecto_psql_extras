@@ -2,6 +2,7 @@ defmodule EctoPSQLExtrasTest do
   use ExUnit.Case, async: true
 
   import EctoPSQLExtras
+  alias EctoPSQLExtras.TestRepo
 
   @optional_queries %{
     calls: EctoPSQLExtras.Calls,
@@ -99,5 +100,27 @@ defmodule EctoPSQLExtrasTest do
 
   test "format string" do
     assert format_value({"Multiline \n\nstring", :string}) == "Multiline string"
+  end
+
+  describe "database interaction" do
+    @skip_queries [:calls, :outliers, :kill_all]
+
+    test "run queries" do
+      for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
+        if elem(el, 0) in @skip_queries do
+          acc
+        else
+          [elem(el, 0) | acc]
+        end
+      end) do
+        assert(length(
+          EctoPSQLExtras.query(
+            query,
+            TestRepo,
+            :raw
+          ).columns
+        ) > 0)
+     end
+   end
   end
 end

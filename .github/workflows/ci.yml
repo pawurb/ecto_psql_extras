@@ -10,6 +10,20 @@ jobs:
   mix_test:
     name: mix test (Elixir ${{matrix.elixir}} | Erlang/OTP ${{matrix.otp}})
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11.6-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ecto_psql_extras_test
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     strategy:
       matrix:
         include:
@@ -38,4 +52,12 @@ jobs:
           mix local.hex --force
           mix local.rebar --force
           mix deps.get --only test
-      - run: mix test
+      - name: Run tests
+        env:
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ecto_psql_extras_test
+          POSTGRES_PASSWORD: postgres
+        run: |
+          mix test

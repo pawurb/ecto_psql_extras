@@ -6,3 +6,5 @@ doc/
 *.ez
 ecto_psql_extras
 *.tar
+docker-compose.yml
+.envrc
