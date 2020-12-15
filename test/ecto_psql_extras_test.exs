@@ -103,14 +103,15 @@ defmodule EctoPSQLExtrasTest do
   end
 
   describe "database interaction" do
-    @skip_queries [:calls, :outliers, :kill_all]
+    @skip_queries [:kill_all]
 
     test "run queries" do
       for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
-        if elem(el, 0) in @skip_queries do
-          acc
-        else
-          [elem(el, 0) | acc]
+        case elem(el, 0) in @skip_queries do
+          true ->
+            acc
+          false ->
+            [elem(el, 0) | acc]
         end
       end) do
         assert(length(
