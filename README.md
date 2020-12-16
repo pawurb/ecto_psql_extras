@@ -52,7 +52,7 @@ You should see the similar line in the output:
 You can run queries using a simple API:
 
 ```elixir
-EctoPSQLExtras.query(:cache_hit, YourApp.Repo)
+EctoPSQLExtras.cache_hit(YourApp.Repo)
 ```
 
 ```bash
@@ -82,13 +82,19 @@ EctoPSQLExtras.query(:index_cache_hit, YourApp.Repo, :raw)
 
 ```
 
+You can also run queries by passing their name to the `query` method:
+
+```elixir
+EctoPSQLExtras.query(:cache_hit, YourApp.Repo)
+```
+
 ## Available methods
 
 ### `cache_hit`
 
 ```
 
-EctoPSQLExtras.query(:cache_hit, YourApp.Repo)
+EctoPSQLExtras.cache_hit(YourApp.Repo)
 
       name      |         ratio
 ----------------+------------------------
@@ -103,7 +109,7 @@ This command provides information on the efficiency of the buffer cache, for bot
 
 ```
 
-EctoPSQLExtras.query(:index_cache_hit, YourApp.Repo)
+EctoPSQLExtras.index_cache_hit(YourApp.Repo)
 
 | name                  | buffer_hits | block_reads | total_read | ratio             |
 +-----------------------+-------------+-------------+------------+-------------------+
@@ -119,7 +125,7 @@ The same as `cache_hit` with each table's indexes cache hit info displayed separ
 
 ```
 
-EctoPSQLExtras.query(:table_cache_hit, YourApp.Repo)
+EctoPSQLExtras.table_cache_hit(YourApp.Repo)
 
 | name                  | buffer_hits | block_reads | total_read | ratio             |
 +-----------------------+-------------+-------------+------------+-------------------+
@@ -135,7 +141,7 @@ The same as `cache_hit` with each table's cache hit info displayed separately.
 
 ```
 
-EctoPSQLExtras.query(:index_usage, YourApp.Repo)
+EctoPSQLExtras.index_usage(YourApp.Repo)
 
        relname       | percent_of_times_index_used | rows_in_table
 ---------------------+-----------------------------+---------------
@@ -153,7 +159,7 @@ This command provides information on the efficiency of indexes, represented as w
 
 ```
 
-EctoPSQLExtras.query(:locks, YourApp.Repo)
+EctoPSQLExtras.locks(YourApp.Repo)
 
  procpid | relname | transactionid | granted |     query_snippet     | mode             |       age
 ---------+---------+---------------+---------+-----------------------+-------------------------------------
@@ -172,7 +178,7 @@ This command displays queries that have taken out an exclusive lock on a relatio
 
 ```elixir
 
-EctoPSQLExtras.query(:all_locks, YourApp.Repo)
+EctoPSQLExtras.all_locks(YourApp.Repo)
 
 ```
 
@@ -182,7 +188,7 @@ This command displays all the current locks, regardless of their type.
 
 ```
 
-EctoPSQLExtras.query(:outliers, YourApp.Repo)
+EctoPSQLExtras.outliers(YourApp.Repo)
 
                    query                 |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
 -----------------------------------------+------------------+----------------+-------------+--------------
@@ -204,7 +210,7 @@ Typically, an efficient query will have an appropriate ratio of calls to total e
 
 ```
 
-EctoPSQLExtras.query(:calls, YourApp.Repo)
+EctoPSQLExtras.calls(YourApp.Repo)
 
                    query                 |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
 -----------------------------------------+------------------+----------------+-------------+--------------
@@ -224,7 +230,7 @@ This command is much like `pg:outliers`, but ordered by the number of times a st
 
 ```
 
-EctoPSQLExtras.query(:blocking, YourApp.Repo)
+EctoPSQLExtras.blocking(YourApp.Repo)
 
  blocked_pid |    blocking_statement    | blocking_duration | blocking_pid |                                        blocked_statement                           | blocked_duration
 -------------+--------------------------+-------------------+--------------+------------------------------------------------------------------------------------+------------------
@@ -238,7 +244,7 @@ This command displays statements that are currently holding locks that other sta
 
 ```
 
-EctoPSQLExtras.query(:total_index_size, YourApp.Repo)
+EctoPSQLExtras.total_index_size(YourApp.Repo)
 
   size
 -------
@@ -252,7 +258,7 @@ This command displays the total size of all indexes on the database, in MB. It i
 
 ```
 
-EctoPSQLExtras.query(:index_size, YourApp.Repo)
+EctoPSQLExtras.index_size(YourApp.Repo)
 
                              name                              |  size
 ---------------------------------------------------------------+---------
@@ -275,7 +281,7 @@ This command displays the size of each each index in the database, in MB. It is 
 
 ```
 
-EctoPSQLExtras.query(:table_size, YourApp.Repo)
+EctoPSQLExtras.table_size(YourApp.Repo)
 
                              name                              |  size
 ---------------------------------------------------------------+---------
@@ -293,7 +299,7 @@ This command displays the size of each table and materialized view in the databa
 
 ```
 
-EctoPSQLExtras.query(:table_indexes_size, YourApp.Repo)
+EctoPSQLExtras.table_indexes_size(YourApp.Repo)
 
                              table                             | indexes_size
 ---------------------------------------------------------------+--------------
@@ -311,7 +317,7 @@ This command displays the total size of indexes for each table and materialized 
 
 ```
 
-EctoPSQLExtras.query(:total_table_size, YourApp.Repo)
+EctoPSQLExtras.total_table_size(YourApp.Repo)
 
                              name                              |  size
 ---------------------------------------------------------------+---------
@@ -329,7 +335,7 @@ This command displays the total size of each table and materialized view in the 
 
 ```
 
-EctoPSQLExtras.query(:unused_indexes, YourApp.Repo)
+EctoPSQLExtras.unused_indexes(YourApp.Repo)
 
           table      |                       index                | index_size | index_scans
 ---------------------+--------------------------------------------+------------+-------------
@@ -345,7 +351,7 @@ This command displays indexes that have < 50 scans recorded against them, and ar
 
 ```
 
-EctoPSQLExtras.query(:seq_scans, YourApp.Repo)
+EctoPSQLExtras.seq_scans(YourApp.Repo)
 
 
                name                |  count
@@ -367,7 +373,7 @@ This command displays the number of sequential scans recorded against all tables
 
 ```
 
-EctoPSQLExtras.query(:long_running_queries, YourApp.Repo)
+EctoPSQLExtras.long_running_queries(YourApp.Repo)
 
 
   pid  |    duration     |                                      query
@@ -384,7 +390,7 @@ This command displays currently running queries, that have been running for long
 
 ```
 
-EctoPSQLExtras.query(:records_rank, YourApp.Repo)
+EctoPSQLExtras.records_rank(YourApp.Repo)
 
                name                | estimated_count
 -----------------------------------+-----------------
@@ -403,7 +409,7 @@ This command displays an estimated count of rows per table, descending by estima
 
 ```
 
-EctoPSQLExtras.query(:bloat, YourApp.Repo)
+EctoPSQLExtras.bloat(YourApp.Repo)
 
 
  type  | schemaname |           object_name         | bloat |   waste
@@ -422,7 +428,7 @@ This command displays an estimation of table "bloat" – space allocated to a re
 
 ```
 
-EctoPSQLExtras.query(:vacuum_stats, YourApp.Repo)
+EctoPSQLExtras.vacuum_stats(YourApp.Repo)
 
  schema |         table         | last_vacuum | last_autovacuum  |    rowcount    | dead_rowcount  | autovacuum_threshold | expect_autovacuum
 --------+-----------------------+-------------+------------------+----------------+----------------+----------------------+-------------------
@@ -439,7 +445,7 @@ This command displays statistics related to vacuum operations for each table, in
 ### `kill_all`
 
 ```elixir
-EctoPSQLExtras.query(:kill_all, YourApp.Repo)
+EctoPSQLExtras.kill_all(YourApp.Repo)
 ```
 
 This commands kills all the currently active connections to the database. It can be useful as a last resort when your database is stuck in a deadlock.
@@ -447,7 +453,7 @@ This commands kills all the currently active connections to the database. It can
 ### `extensions`
 
 ```elixir
-EctoPSQLExtras.query(:extensions, YourApp.Repo)
+EctoPSQLExtras.extensions(YourApp.Repo)
 ```
 
 This command lists all the currently installed and available PostgreSQL extensions.
@@ -455,7 +461,7 @@ This command lists all the currently installed and available PostgreSQL extensio
 ### `mandelbrot`
 
 ```elixir
-EctoPSQLExtras.query(:mandelbrot, YourApp.Repo)
+EctoPSQLExtras.mandelbrot(YourApp.Repo)
 ```
 
 This command outputs the Mandelbrot set, calculated through SQL.
