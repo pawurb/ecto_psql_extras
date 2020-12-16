@@ -105,7 +105,7 @@ defmodule EctoPSQLExtrasTest do
   describe "database interaction" do
     @skip_queries [:kill_all]
 
-    test "run queries" do
+    test "run queries by param" do
       for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
         case elem(el, 0) in @skip_queries do
           true ->
@@ -121,7 +121,26 @@ defmodule EctoPSQLExtrasTest do
             :raw
           ).columns
         ) > 0)
-     end
-   end
+      end
+    end
+
+    test "run queries by method" do
+      for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
+        case elem(el, 0) in @skip_queries do
+          true ->
+            acc
+          false ->
+            [elem(el, 0) | acc]
+        end
+      end) do
+        assert(length(
+          apply(
+            EctoPSQLExtras,
+            query,
+            [TestRepo, :raw]
+          ).columns
+        ) > 0)
+      end
+    end
   end
 end
