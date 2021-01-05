@@ -69,7 +69,7 @@ EctoPSQLExtras.cache_hit(YourApp.Repo)
 By default the ASCII table is displayed. Alternatively you can return the raw query results:
 
 ```elixir
-EctoPSQLExtras.query(:index_cache_hit, YourApp.Repo, :raw)
+EctoPSQLExtras.index_cache_hit(YourApp.Repo, :raw)
 
 %Postgrex.Result{
   columns: ["name", "buffer_hits", "block_reads", "total_read", "ratio"],
