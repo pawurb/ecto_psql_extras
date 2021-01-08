@@ -6,6 +6,7 @@ defmodule EctoPSQLExtras.SeqScans do
       title: "Count of sequential scans by table descending by order",
       order_by: [count: :desc],
       columns: [
+        %{name: :schema, type: :string},
         %{name: :name, type: :string},
         %{name: :count, type: :integer}
       ]
@@ -16,7 +17,7 @@ defmodule EctoPSQLExtras.SeqScans do
     """
     /* Count of sequential scans by table descending by order */
 
-    SELECT relname AS name,
+    SELECT schemaname AS schema, relname AS name,
            seq_scan as count
     FROM
       pg_stat_user_tables
