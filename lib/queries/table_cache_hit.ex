@@ -6,6 +6,7 @@ defmodule EctoPSQLExtras.TableCacheHit do
       title: "Calculates your cache hit rate for reading tables",
       order_by: [ratio: :desc],
       columns: [
+        %{name: :schema, type: :string},
         %{name: :name, type: :string},
         %{name: :buffer_hits, type: :integer},
         %{name: :block_reads, type: :integer},
@@ -20,7 +21,7 @@ defmodule EctoPSQLExtras.TableCacheHit do
     /* Calculates your cache hit rate for reading tables */
 
     SELECT
-      relname AS name,
+      schemaname AS schema, relname AS name,
       heap_blks_hit AS buffer_hits,
       heap_blks_read AS block_reads,
       heap_blks_hit + heap_blks_read AS total_read,

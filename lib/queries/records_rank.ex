@@ -6,6 +6,7 @@ defmodule EctoPSQLExtras.RecordsRank do
       title: "All tables and the number of rows in each ordered by number of rows descending",
       order_by: [estimated_count: :desc],
       columns: [
+        %{name: :schema, type: :string},
         %{name: :name, type: :string},
         %{name: :estimated_count, type: :integer}
       ]
@@ -17,7 +18,7 @@ defmodule EctoPSQLExtras.RecordsRank do
     /* All tables and the number of rows in each ordered by number of rows descending */
 
     SELECT
-      relname AS name,
+      schemaname AS schema, relname AS name,
       n_live_tup AS estimated_count
     FROM
       pg_stat_user_tables

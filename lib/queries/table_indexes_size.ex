@@ -6,6 +6,7 @@ defmodule EctoPSQLExtras.TableIndexesSize do
       title: "Total size of all the indexes on each table, descending by size",
       order_by: [index_size: :desc],
       columns: [
+        %{name: :schema, type: :string},
         %{name: :table, type: :string},
         %{name: :index_size, type: :bytes}
       ]
@@ -16,7 +17,7 @@ defmodule EctoPSQLExtras.TableIndexesSize do
     """
     /* Total size of all the indexes on each table, descending by size */
 
-    SELECT c.relname AS table, pg_indexes_size(c.oid) AS index_size
+    SELECT n.nspname AS schema, c.relname AS table, pg_indexes_size(c.oid) AS index_size
     FROM pg_class c
     LEFT JOIN pg_namespace n ON (n.oid = c.relnamespace)
     WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')

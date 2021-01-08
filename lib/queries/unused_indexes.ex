@@ -5,6 +5,7 @@ defmodule EctoPSQLExtras.UnusedIndexes do
     %{
       title: "Unused and almost unused indexes",
       columns: [
+        %{name: :schema, type: :string},
         %{name: :table, type: :string},
         %{name: :index, type: :string},
         %{name: :index_size, type: :bytes},
@@ -22,7 +23,7 @@ defmodule EctoPSQLExtras.UnusedIndexes do
     but may not in the future as the table grows */
 
     SELECT
-      schemaname || '.' || relname AS table,
+      schemaname AS schema, relname AS table,
       indexrelname AS index,
       pg_relation_size(i.indexrelid) AS index_size,
       idx_scan as index_scans
