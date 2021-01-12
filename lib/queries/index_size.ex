@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.IndexSize do
 
   def query do
     """
-    /* The size of indexes, descending by size */
+    /* ECTO_PSQL_EXTRAS: The size of indexes, descending by size */
 
     SELECT n.nspname AS schema, c.relname AS name, sum(c.relpages::bigint*8192)::bigint AS size
     FROM pg_class c

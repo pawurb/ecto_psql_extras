@@ -17,7 +17,7 @@ defmodule EctoPSQLExtras.Bloat do
 
   def query do
     """
-    /* Table and index bloat in your database ordered by most wasteful */
+    /* ECTO_PSQL_EXTRAS: Table and index bloat in your database ordered by most wasteful */
 
     WITH constants AS (
       SELECT current_setting('block_size')::numeric AS bs, 23 AS hdr, 4 AS ma

@@ -19,7 +19,7 @@ defmodule EctoPSQLExtras.VacuumStats do
 
   def query do
     """
-    /* Dead rows and whether an automatic vacuum is expected to be triggered */
+    /* ECTO_PSQL_EXTRAS: Dead rows and whether an automatic vacuum is expected to be triggered */
 
     WITH table_opts AS (
       SELECT

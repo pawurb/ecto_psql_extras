@@ -18,7 +18,7 @@ defmodule EctoPSQLExtras.AllLocks do
 
   def query do
     """
-    /* Queries with active locks */
+    /* ECTO_PSQL_EXTRAS: Queries with active locks */
 
     SELECT
       pg_stat_activity.pid,

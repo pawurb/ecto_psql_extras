@@ -16,7 +16,7 @@ defmodule EctoPSQLExtras.Extensions do
 
   def query do
     """
-    /* Available and installed extensions */
+    /* ECTO_PSQL_EXTRAS: Available and installed extensions */
 
     SELECT name, default_version, installed_version, comment
     FROM pg_available_extensions

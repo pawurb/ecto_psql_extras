@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.IndexUsage do
 
   def query do
     """
-    /* Index hit rate (effective databases are at 99% and up) */
+    /* ECTO_PSQL_EXTRAS: Index hit rate (effective databases are at 99% and up) */
 
     SELECT schemaname AS schema, relname AS name,
        CASE idx_scan

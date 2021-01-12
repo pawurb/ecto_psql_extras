@@ -12,7 +12,7 @@ defmodule EctoPSQLExtras.Mandelbrot do
 
   def query do
     """
-    /* The mandelbrot set */
+    /* ECTO_PSQL_EXTRAS: The mandelbrot set */
 
     WITH RECURSIVE Z(IX, IY, CX, CY, X, Y, I) AS (
               SELECT IX, IY, X::float, Y::float, X::float, Y::float, 0

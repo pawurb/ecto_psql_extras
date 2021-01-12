@@ -13,7 +13,7 @@ defmodule EctoPSQLExtras.CacheHit do
 
   def query do
     """
-    /* Index and table hit rate */
+    /* ECTO_PSQL_EXTRAS: Index and table hit rate */
 
     SELECT
       'index hit rate' AS name,

@@ -17,7 +17,7 @@ defmodule EctoPSQLExtras.Blocking do
 
   def query do
     """
-    /* Queries holding locks other queries are waiting to be released */
+    /* ECTO_PSQL_EXTRAS: Queries holding locks other queries are waiting to be released */
 
     SELECT bl.pid AS blocked_pid,
       ka.query AS blocking_statement,
