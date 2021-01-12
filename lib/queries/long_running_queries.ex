@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.LongRunningQueries do
 
   def query do
     """
-    /* All queries longer than five minutes by descending duration */
+    /* ECTO_PSQL_EXTRAS: All queries longer than five minutes by descending duration */
 
     SELECT
       pid,

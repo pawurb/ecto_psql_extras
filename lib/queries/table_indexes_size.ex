@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.TableIndexesSize do
 
   def query do
     """
-    /* Total size of all the indexes on each table, descending by size */
+    /* ECTO_PSQL_EXTRAS: Total size of all the indexes on each table, descending by size */
 
     SELECT n.nspname AS schema, c.relname AS table, pg_indexes_size(c.oid) AS index_size
     FROM pg_class c

@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.SeqScans do
 
   def query do
     """
-    /* Count of sequential scans by table descending by order */
+    /* ECTO_PSQL_EXTRAS: Count of sequential scans by table descending by order */
 
     SELECT schemaname AS schema, relname AS name,
            seq_scan as count

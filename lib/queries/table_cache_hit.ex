@@ -18,7 +18,7 @@ defmodule EctoPSQLExtras.TableCacheHit do
 
   def query do
     """
-    /* Calculates your cache hit rate for reading tables */
+    /* ECTO_PSQL_EXTRAS: Calculates your cache hit rate for reading tables */
 
     SELECT
       schemaname AS schema, relname AS name,

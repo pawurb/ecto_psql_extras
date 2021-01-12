@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.RecordsRank do
 
   def query do
     """
-    /* All tables and the number of rows in each ordered by number of rows descending */
+    /* ECTO_PSQL_EXTRAS: All tables and the number of rows in each ordered by number of rows descending */
 
     SELECT
       schemaname AS schema, relname AS name,

@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.TableSize do
 
   def query do
     """
-    /* Size of the tables (excluding indexes), descending by size */
+    /* ECTO_PSQL_EXTRAS: Size of the tables (excluding indexes), descending by size */
 
     SELECT n.nspname AS schema, c.relname AS name, pg_table_size(c.oid) AS size
     FROM pg_class c

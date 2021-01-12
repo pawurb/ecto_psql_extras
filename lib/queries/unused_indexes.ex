@@ -16,7 +16,7 @@ defmodule EctoPSQLExtras.UnusedIndexes do
 
   def query do
     """
-    /* Unused and almost unused indexes */
+    /* ECTO_PSQL_EXTRAS: Unused and almost unused indexes */
     /* Ordered by their size relative to the number of index scans.
     Exclude indexes of very small tables (less than 5 pages),
     where the planner will almost invariably select a sequential scan,

@@ -12,7 +12,7 @@ defmodule EctoPSQLExtras.KillAll do
 
   def query do
     """
-    /* Kill all the active database connections */
+    /* ECTO_PSQL_EXTRAS: Kill all the active database connections */
 
     SELECT pg_terminate_backend(pid) AS killed FROM pg_stat_activity
       WHERE pid <> pg_backend_pid()
