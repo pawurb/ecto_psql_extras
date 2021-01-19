@@ -29,7 +29,7 @@ Alternative versions:
 ```elixir
  def deps do
     [
-      {:ecto_psql_extras, "~> 0.3" }
+      {:ecto_psql_extras, "~> 0.4" }
     ]
  end
 ```
