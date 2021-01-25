@@ -16,7 +16,7 @@ defmodule EctoPSQLExtras.Locks do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: Queries with active exclusive locks */
 

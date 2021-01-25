@@ -7,7 +7,7 @@ defmodule EctoPSQLExtras do
               required(:title) => binary,
               required(:columns) => [%{name: atom, type: atom}],
               optional(:order_by) => [{atom, :asc | :desc}],
-              optional(:limit) => pos_integer
+              optional(:default_args) => list
             }
 
   @callback query :: binary
@@ -72,10 +72,20 @@ defmodule EctoPSQLExtras do
 
   `format` is either `:ascii` or `:raw`.
   """
-  def query(name, repo, format \\ :ascii) do
+  def query(name, repo, opts \\ []) do
     query_module = Map.fetch!(queries(repo), name)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
+    opts = prepare_opts(opts, query_module.info[:default_args])
+
+    result = repo.query!(
+      query_module.query(
+        Keyword.fetch!(opts, :args)
+      )
+    )
+
+    format(
+      Keyword.fetch!(opts, :format),
+      query_module.info, result
+    )
   end
 
   @doc """
@@ -83,253 +93,161 @@ defmodule EctoPSQLExtras do
 
   `format` is either `:ascii` or `:raw`
   """
-  def bloat(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :bloat)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def bloat(repo, opts \\ []), do: query(:bloat, repo, opts)
 
   @doc """
   Run `blocking` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def blocking(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :blocking)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def blocking(repo, opts \\ []), do: query(:blocking, repo, opts)
 
   @doc """
   Run `cache_hit` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def cache_hit(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :cache_hit)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def cache_hit(repo, opts \\ []), do: query(:cache_hit, repo, opts)
 
   @doc """
   Run `extensions` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def extensions(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :extensions)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def extensions(repo, opts \\ []), do: query(:extensions, repo, opts)
 
   @doc """
   Run `table_cache_hit` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def table_cache_hit(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :table_cache_hit)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def table_cache_hit(repo, opts \\ []), do: query(:table_cache_hit, repo, opts)
 
   @doc """
   Run `index_cache_hit` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def index_cache_hit(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :index_cache_hit)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def index_cache_hit(repo, opts \\ []), do: query(:index_cache_hit, repo, opts)
 
   @doc """
   Run `index_size` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def index_size(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :index_size)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def index_size(repo, opts \\ []), do: query(:index_size, repo, opts)
 
   @doc """
   Run `index_usage` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def index_usage(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :index_usage)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def index_usage(repo, opts \\ []), do: query(:index_usage, repo, opts)
 
   @doc """
   Run `locks` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def locks(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :locks)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def locks(repo, opts \\ []), do: query(:locks, repo, opts)
 
   @doc """
   Run `all_locks` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def all_locks(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :all_locks)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def all_locks(repo, opts \\ []), do: query(:all_locks, repo, opts)
 
   @doc """
   Run `long_running_queries` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def long_running_queries(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :long_running_queries)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def long_running_queries(repo, opts \\ []), do: query(:long_running_queries, repo, opts)
 
   @doc """
   Run `mandelbrot` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def mandelbrot(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :mandelbrot)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def mandelbrot(repo, opts \\ []), do: query(:mandelbrot, repo, opts)
 
   @doc """
   Run `records_rank` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def records_rank(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :records_rank)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def records_rank(repo, opts \\ []), do: query(:records_rank, repo, opts)
 
   @doc """
   Run `seq_scans` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def seq_scans(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :seq_scans)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def seq_scans(repo, opts \\ []), do: query(:seq_scans, repo, opts)
 
   @doc """
   Run `table_indexes_size` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def table_indexes_size(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :table_indexes_size)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def table_indexes_size(repo, opts \\ []), do: query(:table_indexes_size, repo, opts)
 
   @doc """
   Run `table_size` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def table_size(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :table_size)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def table_size(repo, opts \\ []), do: query(:table_size, repo, opts)
 
   @doc """
   Run `total_index_size` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def total_index_size(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :total_index_size)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def total_index_size(repo, opts \\ []), do: query(:total_index_size, repo, opts)
 
   @doc """
   Run `total_table_size` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def total_table_size(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :total_table_size)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def total_table_size(repo, opts \\ []), do: query(:total_table_size, repo, opts)
 
   @doc """
   Run `unused_indexes` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def unused_indexes(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :unused_indexes)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def unused_indexes(repo, opts \\ []), do: query(:unused_indexes, repo, opts)
 
   @doc """
   Run `vacuum_stats` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def vacuum_stats(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :vacuum_stats)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def vacuum_stats(repo, opts \\ []), do: query(:vacuum_stats, repo, opts)
 
   @doc """
   Run `kill_all` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def kill_all(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :kill_all)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def kill_all(repo, opts \\ []), do: query(:kill_all, repo, opts)
 
   @doc """
   Run `calls` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def calls(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :calls)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def calls(repo, opts \\ []), do: query(:calls, repo, opts)
 
   @doc """
   Run `outliers` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
   """
-  def outliers(repo, format \\ :ascii) do
-    query_module = Map.fetch!(queries(repo), :outliers)
-    result = repo.query!(query_module.query)
-    format(format, query_module.info, result)
-  end
+  def outliers(repo, opts \\ []), do: query(:outliers, repo, opts)
 
   defp format(:ascii, info, result) do
     names = Enum.map(info.columns, & &1.name)
@@ -393,4 +311,18 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:GB), do: 1024 * 1024 * 1024
   defp memory_unit(:MB), do: 1024 * 1024
   defp memory_unit(:KB), do: 1024
+
+  defp prepare_opts(opts, default_args) do
+    format = opts[:format] || :ascii
+
+    args = Keyword.merge(
+      default_args || [],
+      opts[:args] || []
+    )
+
+    [
+      format: format,
+      args: args
+    ]
+  end
 end

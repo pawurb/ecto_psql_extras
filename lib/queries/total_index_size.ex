@@ -11,7 +11,7 @@ defmodule EctoPSQLExtras.TotalIndexSize do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: Total size of all indexes in MB */
 

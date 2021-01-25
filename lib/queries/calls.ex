@@ -3,9 +3,9 @@ defmodule EctoPSQLExtras.Calls do
 
   def info do
     %{
-      title: "10 queries that have the highest frequency of execution",
-      limit: 10,
+      title: "Queries that have the highest frequency of execution",
       order_by: [calls: :desc],
+      default_args: [limit: 10],
       columns: [
         %{name: :query, type: :string},
         %{name: :exec_time, type: :interval},
@@ -16,9 +16,9 @@ defmodule EctoPSQLExtras.Calls do
     }
   end
 
-  def query do
+  def query(args \\ []) do
     """
-    /* ECTO_PSQL_EXTRAS: 10 queries that have the highest frequency of execution */
+    /* ECTO_PSQL_EXTRAS: Queries that have the highest frequency of execution */
 
     SELECT query AS query,
     interval '1 millisecond' * total_exec_time AS exec_time,
@@ -28,7 +28,7 @@ defmodule EctoPSQLExtras.Calls do
     FROM pg_stat_statements WHERE userid = (SELECT usesysid FROM pg_user WHERE usename = current_user LIMIT 1)
     AND query NOT LIKE '/* ECTO_PSQL_EXTRAS:%'
     ORDER BY calls DESC
-    LIMIT 10;
-    """
+    LIMIT <%= limit %>;
+    """ |> EEx.eval_string(args)
   end
 end

@@ -3,8 +3,9 @@ defmodule EctoPSQLExtras.LongRunningQueries do
 
   def info do
     %{
-      title: "All queries longer than five minutes by descending duration",
+      title: "All queries longer than the threshold by descending duration",
       order_by: [duration: :desc],
+      default_args: [threshold: "500 milliseconds"],
       columns: [
         %{name: :pid, type: :int},
         %{name: :duration, type: :interval},
@@ -13,9 +14,9 @@ defmodule EctoPSQLExtras.LongRunningQueries do
     }
   end
 
-  def query do
+  def query(args \\ []) do
     """
-    /* ECTO_PSQL_EXTRAS: All queries longer than five minutes by descending duration */
+    /* ECTO_PSQL_EXTRAS: All queries longer than the threshold by descending duration */
 
     SELECT
       pid,
@@ -26,9 +27,9 @@ defmodule EctoPSQLExtras.LongRunningQueries do
     WHERE
       pg_stat_activity.query <> ''::text
       AND state <> 'idle'
-      AND now() - pg_stat_activity.query_start > interval '5 minutes'
+      AND now() - pg_stat_activity.query_start > interval '<%= threshold %>'
     ORDER BY
       now() - pg_stat_activity.query_start DESC;
-    """
+    """ |> EEx.eval_string(args)
   end
 end
