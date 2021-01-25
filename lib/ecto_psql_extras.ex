@@ -7,7 +7,8 @@ defmodule EctoPSQLExtras do
               required(:title) => binary,
               required(:columns) => [%{name: atom, type: atom}],
               optional(:order_by) => [{atom, :asc | :desc}],
-              optional(:default_args) => list
+              optional(:default_args) => list,
+              optional(:args_for_select) => list
             }
 
   @callback query :: binary
@@ -313,7 +314,7 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:KB), do: 1024
 
   defp prepare_opts(opts, default_args) do
-    format = opts[:format] || :ascii
+    format = Keyword.get(opts, :format, :ascii)
 
     args = Keyword.merge(
       default_args || [],
