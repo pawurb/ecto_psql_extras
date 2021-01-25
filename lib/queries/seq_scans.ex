@@ -13,7 +13,7 @@ defmodule EctoPSQLExtras.SeqScans do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: Count of sequential scans by table descending by order */
 

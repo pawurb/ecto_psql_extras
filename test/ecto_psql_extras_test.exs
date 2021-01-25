@@ -118,10 +118,27 @@ defmodule EctoPSQLExtrasTest do
           EctoPSQLExtras.query(
             query,
             TestRepo,
-            :raw
+            [format: :raw]
           ).columns
         ) > 0)
       end
+    end
+
+    test "provide custom param" do
+      assert(length(
+        EctoPSQLExtras.long_running_queries(
+          TestRepo,
+          [format: :raw, args: [threshold: '1 second']]
+        ).columns
+      ) > 0)
+
+      assert(length(
+        EctoPSQLExtras.query(
+          :long_running_queries,
+          TestRepo,
+          [format: :raw, args: [threshold: '200 milliseconds']]
+        ).columns
+      ) > 0)
     end
 
     test "run queries by method" do
@@ -137,7 +154,7 @@ defmodule EctoPSQLExtrasTest do
           apply(
             EctoPSQLExtras,
             query,
-            [TestRepo, :raw]
+            [TestRepo, [format: :raw]]
           ).columns
         ) > 0)
       end

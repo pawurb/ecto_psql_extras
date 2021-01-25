@@ -88,6 +88,12 @@ You can also run queries by passing their name to the `query` method:
 EctoPSQLExtras.query(:cache_hit, YourApp.Repo)
 ```
 
+Some methods accept an optional `args` param allowing you to customize queries:
+
+```elixir
+EctoPSQLExtras.long_running_queries(YourApp.Repo, args: [threshold: "200 milliseconds"])
+```
+
 ## Available methods
 
 ### `cache_hit`
@@ -188,7 +194,7 @@ This command displays all the current locks, regardless of their type.
 
 ```
 
-EctoPSQLExtras.outliers(YourApp.Repo)
+EctoPSQLExtras.outliers(YourApp.Repo, args: [limit: 20])
 
                    query                 |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
 -----------------------------------------+------------------+----------------+-------------+--------------
@@ -210,7 +216,7 @@ Typically, an efficient query will have an appropriate ratio of calls to total e
 
 ```
 
-EctoPSQLExtras.calls(YourApp.Repo)
+EctoPSQLExtras.calls(YourApp.Repo, args: [limit: 20])
 
                    query                 |    exec_time     | prop_exec_time |   ncalls    | sync_io_time
 -----------------------------------------+------------------+----------------+-------------+--------------
@@ -373,7 +379,7 @@ This command displays the number of sequential scans recorded against all tables
 
 ```
 
-EctoPSQLExtras.long_running_queries(YourApp.Repo)
+EctoPSQLExtras.long_running_queries(YourApp.Repo, args: [threshold: "200 milliseconds"])
 
 
   pid  |    duration     |                                      query

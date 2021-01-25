@@ -3,9 +3,9 @@ defmodule EctoPSQLExtras.OutliersLegacy do
 
   def info do
     %{
-      title: "10 queries that have longest execution time in aggregate",
+      title: "Queries that have longest execution time in aggregate",
       order_by: [exec_time: :desc],
-      limit: 10,
+      default_args: [limit: 10],
       columns: [
         %{name: :query, type: :string},
         %{name: :exec_time, type: :interval},
@@ -16,7 +16,7 @@ defmodule EctoPSQLExtras.OutliersLegacy do
     }
   end
 
-  def query do
+  def query(args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: 10 queries that have longest execution time in aggregate */
 
@@ -28,7 +28,7 @@ defmodule EctoPSQLExtras.OutliersLegacy do
     FROM pg_stat_statements WHERE userid = (SELECT usesysid FROM pg_user WHERE usename = current_user LIMIT 1)
     AND query NOT LIKE '/* ECTO_PSQL_EXTRAS:%'
     ORDER BY total_time DESC
-    LIMIT 10;
-    """
+    LIMIT <%= limit %>;
+    """ |> EEx.eval_string(args)
   end
 end

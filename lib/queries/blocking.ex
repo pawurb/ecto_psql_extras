@@ -15,7 +15,7 @@ defmodule EctoPSQLExtras.Blocking do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: Queries holding locks other queries are waiting to be released */
 

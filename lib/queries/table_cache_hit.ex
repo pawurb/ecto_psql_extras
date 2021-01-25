@@ -16,7 +16,7 @@ defmodule EctoPSQLExtras.TableCacheHit do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: Calculates your cache hit rate for reading tables */
 

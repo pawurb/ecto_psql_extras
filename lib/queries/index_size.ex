@@ -13,7 +13,7 @@ defmodule EctoPSQLExtras.IndexSize do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: The size of indexes, descending by size */
 

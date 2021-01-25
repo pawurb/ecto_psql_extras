@@ -10,7 +10,7 @@ defmodule EctoPSQLExtras.Mandelbrot do
     }
   end
 
-  def query do
+  def query(_args \\ []) do
     """
     /* ECTO_PSQL_EXTRAS: The mandelbrot set */
 
