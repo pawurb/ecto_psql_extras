@@ -341,7 +341,7 @@ This command displays the total size of each table and materialized view in the 
 
 ```
 
-EctoPSQLExtras.unused_indexes(YourApp.Repo)
+EctoPSQLExtras.unused_indexes(YourApp.Repo, args: [min_scans: 20])
 
           table      |                       index                | index_size | index_scans
 ---------------------+--------------------------------------------+------------+-------------
