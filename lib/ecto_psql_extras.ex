@@ -313,6 +313,12 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:MB), do: 1024 * 1024
   defp memory_unit(:KB), do: 1024
 
+  defp prepare_opts(format, default_args) when is_atom(format) do
+    IO.warn "This API is deprecated. Please pass format value as a keyword list: `format: :raw`",
+            Macro.Env.stacktrace(__ENV__)
+    prepare_opts([format: format], default_args)
+  end
+
   defp prepare_opts(opts, default_args) do
     format = Keyword.get(opts, :format, :ascii)
 

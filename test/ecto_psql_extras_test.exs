@@ -141,6 +141,15 @@ defmodule EctoPSQLExtrasTest do
       ) > 0)
     end
 
+    test "test legacy API" do
+      assert(length(
+        EctoPSQLExtras.long_running_queries(
+          TestRepo,
+          :raw
+        ).columns
+      ) > 0)
+    end
+
     test "run queries by method" do
       for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
         case elem(el, 0) in @skip_queries do
