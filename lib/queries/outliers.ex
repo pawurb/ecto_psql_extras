@@ -18,7 +18,7 @@ defmodule EctoPSQLExtras.Outliers do
 
   def query(args \\ []) do
     """
-    /* ECTO_PSQL_EXTRAS: 10 queries that have longest execution time in aggregate */
+    /* ECTO_PSQL_EXTRAS: Queries that have longest execution time in aggregate */
 
     SELECT query AS query,
     interval '1 millisecond' * total_exec_time AS exec_time,
@@ -28,7 +28,7 @@ defmodule EctoPSQLExtras.Outliers do
     FROM pg_stat_statements WHERE userid = (SELECT usesysid FROM pg_user WHERE usename = current_user LIMIT 1)
     AND query NOT LIKE '/* ECTO_PSQL_EXTRAS:%'
     ORDER BY total_exec_time DESC
-    LIMIT 10;
+    LIMIT <%= limit %>;
     """ |> EEx.eval_string(args)
   end
 end

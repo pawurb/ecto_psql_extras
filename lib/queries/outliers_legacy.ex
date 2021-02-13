@@ -18,7 +18,7 @@ defmodule EctoPSQLExtras.OutliersLegacy do
 
   def query(args \\ []) do
     """
-    /* ECTO_PSQL_EXTRAS: 10 queries that have longest execution time in aggregate */
+    /* ECTO_PSQL_EXTRAS: Queries that have longest execution time in aggregate */
 
     SELECT query AS query,
     interval '1 millisecond' * total_time AS exec_time,

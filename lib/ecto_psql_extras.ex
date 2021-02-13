@@ -40,6 +40,7 @@ defmodule EctoPSQLExtras do
       total_index_size: EctoPSQLExtras.TotalIndexSize,
       total_table_size: EctoPSQLExtras.TotalTableSize,
       unused_indexes: EctoPSQLExtras.UnusedIndexes,
+      null_indexes: EctoPSQLExtras.NullIndexes,
       vacuum_stats: EctoPSQLExtras.VacuumStats,
       kill_all: EctoPSQLExtras.KillAll
     }
@@ -221,6 +222,13 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def unused_indexes(repo, opts \\ []), do: query(:unused_indexes, repo, opts)
+
+  @doc """
+  Run `null_indexes` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def null_indexes(repo, opts \\ []), do: query(:null_indexes, repo, opts)
 
   @doc """
   Run `vacuum_stats` query on `repo`, in the given `format`.
