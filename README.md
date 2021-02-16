@@ -149,6 +149,26 @@ The same as `cache_hit` with each table's cache hit info displayed separately.
 
 [More info](https://pawelurbanek.com/postgresql-fix-performance#cache-hit)
 
+### `db_settings`
+
+```
+
+EctoPSQLExtras.db_settings(YourApp.Repo)
+
+             name             | setting | unit |
+------------------------------+---------+------+
+ checkpoint_completion_target | 0.7     |      |
+ default_statistics_target    | 100     |      |
+ effective_cache_size         | 1350000 | 8kB  |
+ effective_io_concurrency     | 1       |      |
+(truncated results for brevity)
+
+```
+
+This method displays values for selected PostgreSQL settings. You can compare them with settings recommended by [PGTune](https://pgtune.leopard.in.ua/#/) and tweak values to improve performance.
+
+[More info](https://pawelurbanek.com/postgresql-fix-performance#cache-hit)
+
 ### `index_usage`
 
 ```

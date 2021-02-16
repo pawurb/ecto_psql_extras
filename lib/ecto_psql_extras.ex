@@ -24,6 +24,7 @@ defmodule EctoPSQLExtras do
       bloat: EctoPSQLExtras.Bloat,
       blocking: EctoPSQLExtras.Blocking,
       cache_hit: EctoPSQLExtras.CacheHit,
+      db_settings: EctoPSQLExtras.DbSettings,
       extensions: EctoPSQLExtras.Extensions,
       table_cache_hit: EctoPSQLExtras.TableCacheHit,
       index_cache_hit: EctoPSQLExtras.IndexCacheHit,
@@ -110,6 +111,13 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def cache_hit(repo, opts \\ []), do: query(:cache_hit, repo, opts)
+
+  @doc """
+  Run `db_settings` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def db_settings(repo, opts \\ []), do: query(:db_settings, repo, opts)
 
   @doc """
   Run `extensions` query on `repo`, in the given `format`.
