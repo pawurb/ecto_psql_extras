@@ -529,3 +529,8 @@ EctoPSQLExtras.mandelbrot(YourApp.Repo)
 ```
 
 This command outputs the Mandelbrot set, calculated through SQL.
+
+## Query sources
+
+- [https://github.com/heroku/heroku-pg-extras](https://github.com/heroku/heroku-pg-extras)
+- [https://hakibenita.com/postgresql-unused-index-size](https://hakibenita.com/postgresql-unused-index-size)
