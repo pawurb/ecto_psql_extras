@@ -1,7 +1,7 @@
 defmodule EctoPSQLExtras.Mixfile do
   use Mix.Project
   @github_url "https://github.com/pawurb/ecto_psql_extras"
-  @version "0.6.4"
+  @version "0.6.5"
 
   def project do
     [
@@ -18,7 +18,7 @@ defmodule EctoPSQLExtras.Mixfile do
 
   def deps do
     [
-      {:table_rex, "~> 3.0.0"},
+      {:table_rex, "~> 3.1.1"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.15.7"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
