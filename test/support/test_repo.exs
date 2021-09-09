@@ -11,10 +11,17 @@ defmodule EctoPSQLExtras.TestRepo do
     postgres_url = System.get_env("POSTGRES_URL")
 
     if postgres_url do
-      "ecto://#{postgres_url}/#{System.fetch_env!("POSTGRES_DB")}"
+      "ecto://#{postgres_url}/#{fetch_env!("POSTGRES_DB")}"
     else
-      "ecto://#{System.fetch_env!("POSTGRES_USER")}:#{System.fetch_env!("POSTGRES_PASSWORD")}@#{System.fetch_env!("POSTGRES_HOST")}:#{System.fetch_env!("POSTGRES_PORT")}/#{System.fetch_env!("POSTGRES_DB")}"
+      "ecto://#{fetch_env!("POSTGRES_USER")}:#{fetch_env!("POSTGRES_PASSWORD")}@#{fetch_env!("POSTGRES_HOST")}:#{fetch_env!("POSTGRES_PORT")}/#{fetch_env!("POSTGRES_DB")}"
     end
+  end
+
+  # Only needed because we still support Elixir below 1.9
+  defp fetch_env!(name) do
+    System.get_env(name) ||
+      raise ArgumentError,
+            "could not fetch environment variable #{inspect(name)} because it is not set"
   end
 end
 

@@ -13,12 +13,15 @@ defmodule EctoPSQLExtras do
 
   @callback query :: binary
 
+  @type repo :: module() | {node(), module()}
+
   @doc """
   Returns all queries and their modules.
 
   If a repository is given, it will be queried for extensions support
   and special queries will be included if available.
   """
+  @spec queries(repo() | nil) :: map()
   def queries(repo \\ nil) do
     %{
       bloat: EctoPSQLExtras.Bloat,
@@ -64,8 +67,8 @@ defmodule EctoPSQLExtras do
   end
 
   defp pg_stat_statements_version(repo) do
-    case repo.query!(@pg_stat_statements_query).rows do
-      [[value]] when is_binary(value) -> Postgrex.Utils.parse_version(value)
+    case query!(repo, @pg_stat_statements_query) do
+      %{rows: [[value]]} when is_binary(value) -> Postgrex.Utils.parse_version(value)
       _ -> nil
     end
   end
@@ -79,16 +82,30 @@ defmodule EctoPSQLExtras do
     query_module = Map.fetch!(queries(repo), name)
     opts = prepare_opts(opts, query_module.info[:default_args])
 
-    result = repo.query!(
-      query_module.query(
-        Keyword.fetch!(opts, :args)
-      )
-    )
+    result = query!(repo, query_module.query(Keyword.fetch!(opts, :args)))
 
     format(
       Keyword.fetch!(opts, :format),
-      query_module.info, result
+      query_module.info,
+      result
     )
+  end
+
+  defp query!({node, repo}, query) do
+    case :rpc.call(node, repo, :query!, [query]) do
+      {:badrpc, {:EXIT, {:undef, [{^repo, :query!, _, []}]}}} ->
+        raise "repository is not defined on remote node"
+
+      {:badrpc, error} ->
+        raise "cannot send query to remote node #{inspect(node)}. Reason: #{inspect(error)}"
+
+      result ->
+        result
+    end
+  end
+
+  defp query!(repo, query) do
+    repo.query!(query)
   end
 
   @doc """
