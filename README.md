@@ -29,7 +29,7 @@ Alternative versions:
 ```elixir
  def deps do
     [
-      {:ecto_psql_extras, "~> 0.6" }
+      {:ecto_psql_extras, "~> 0.6"}
     ]
  end
 ```
@@ -549,4 +549,10 @@ You need to set the following environment variables in order to execute or run t
 
 ```
 $ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" mix test
+```
+
+For the distribution tests you need Elixir 1.12 and some flags:
+
+```
+$ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" elixir --sname mytests --cookie mycookie -S mix test --only distribution
 ```
