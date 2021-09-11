@@ -188,7 +188,7 @@ defmodule EctoPSQLExtrasTest do
       assert Node.connect(node_name)
 
       for query_name <- Map.keys(queries()), query_name not in @skip_queries do
-        assert EctoPSQLExtras.query(query_name, {node_name, Dummy.Repo}, format: :raw).columns !=
+        assert EctoPSQLExtras.query(query_name, {Dummy.Repo, node_name}, format: :raw).columns !=
                  []
       end
     end
@@ -197,12 +197,12 @@ defmodule EctoPSQLExtrasTest do
     test "provide custom param", %{node_name: node_name} do
       assert Node.connect(node_name)
 
-      assert EctoPSQLExtras.long_running_queries({node_name, Dummy.Repo},
+      assert EctoPSQLExtras.long_running_queries({Dummy.Repo, node_name},
                format: :raw,
                args: [threshold: '1 second']
              ).columns != []
 
-      assert EctoPSQLExtras.query(:long_running_queries, {node_name, Dummy.Repo},
+      assert EctoPSQLExtras.query(:long_running_queries, {Dummy.Repo, node_name},
                format: :raw,
                args: [threshold: '200 milliseconds']
              ).columns != []
@@ -213,7 +213,7 @@ defmodule EctoPSQLExtrasTest do
       assert Node.connect(node_name)
 
       assert_raise RuntimeError, "repository is not defined on remote node", fn ->
-        EctoPSQLExtras.long_running_queries({node_name, Dummy.InvalidRepo},
+        EctoPSQLExtras.long_running_queries({Dummy.InvalidRepo, node_name},
           format: :raw,
           args: [threshold: '1 second']
         )
@@ -226,7 +226,7 @@ defmodule EctoPSQLExtrasTest do
       assert_raise RuntimeError,
                    "cannot send query to remote node #{inspect(node_name)}. Reason: :nodedown",
                    fn ->
-                     EctoPSQLExtras.long_running_queries({node_name, Dummy.Repo},
+                     EctoPSQLExtras.long_running_queries({Dummy.Repo, node_name},
                        format: :raw,
                        args: [threshold: '1 second']
                      )

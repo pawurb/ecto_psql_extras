@@ -13,7 +13,7 @@ defmodule EctoPSQLExtras do
 
   @callback query :: binary
 
-  @type repo :: module() | {node(), module()}
+  @type repo :: module() | {module(), node()}
 
   @doc """
   Returns all queries and their modules.
@@ -91,7 +91,7 @@ defmodule EctoPSQLExtras do
     )
   end
 
-  defp query!({node, repo}, query) do
+  defp query!({repo, node}, query) do
     case :rpc.call(node, repo, :query!, [query]) do
       {:badrpc, {:EXIT, {:undef, [{^repo, :query!, _, []}]}}} ->
         raise "repository is not defined on remote node"
