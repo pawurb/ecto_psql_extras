@@ -76,7 +76,17 @@ defmodule EctoPSQLExtras do
   @doc """
   Run a query with `name`, on `repo`, in the given `format`.
 
-  `format` is either `:ascii` or `:raw`.
+  The `repo` can be a module name or a tuple like `{module, node}`.
+
+  ## Options
+
+    * `:format` - The format that results will return. Accepts `:ascii` or `:raw`.
+      If `:raw` a result struct will be returned. Otherwise it returns a nice
+      table printed in ASCII - a string. This option is required.
+
+    * `:args` - Overwrites the default arguments for the given query. You can
+      check the defaults of each query in its modules defined in this project.
+
   """
   def query(name, repo, opts \\ []) do
     query_module = Map.fetch!(queries(repo), name)
