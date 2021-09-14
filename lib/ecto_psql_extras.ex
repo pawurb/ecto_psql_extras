@@ -103,7 +103,7 @@ defmodule EctoPSQLExtras do
 
   defp query!({repo, node}, query) do
     case :rpc.call(node, repo, :query!, [query]) do
-      {:badrpc, {:EXIT, {:undef, [{^repo, :query!, _, []}]}}} ->
+      {:badrpc, {:EXIT, {:undef, _}}} ->
         raise "repository is not defined on remote node"
 
       {:badrpc, error} ->
