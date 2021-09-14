@@ -105,6 +105,11 @@ defmodule EctoPSQLExtrasTest do
   end
 
   describe "database interaction" do
+    setup do
+      start_supervised!(EctoPSQLExtras.TestRepo)
+      :ok
+    end
+
     test "run queries by param" do
       for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
         case elem(el, 0) in @skip_queries do

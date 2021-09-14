@@ -7,7 +7,7 @@ defmodule EctoPSQLExtras.TestRepo do
     {:ok, opts}
   end
 
-  defp database_url do
+  def database_url do
     postgres_url = System.get_env("POSTGRES_URL")
 
     if postgres_url do
@@ -24,5 +24,3 @@ defmodule EctoPSQLExtras.TestRepo do
             "could not fetch environment variable #{inspect(name)} because it is not set"
   end
 end
-
-EctoPSQLExtras.TestRepo.start_link()
