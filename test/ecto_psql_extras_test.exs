@@ -173,10 +173,11 @@ defmodule EctoPSQLExtrasTest do
   describe "integration with a remote node" do
     setup context do
       if context[:distribution] do
+        start_supervised!(Dummy.Repo)
         # Node names are configured in test_helper.exs
-        nodes = Application.fetch_env!(:ecto_psql_extras, :nodes)
+        node_name = Application.fetch_env!(:ecto_psql_extras, :node_name)
 
-        {:ok, node_name: Enum.random(nodes)}
+        {:ok, node_name: node_name}
       else
         :ok
       end
