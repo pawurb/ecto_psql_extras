@@ -171,13 +171,12 @@ defmodule EctoPSQLExtrasTest do
   end
 
   describe "integration with a remote node" do
-    import EctoPSQLExtras.DistributionSupport
-
     setup context do
       if context[:distribution] do
-        node_info = setup_support_project!("dummy_app.exs")
+        # Node names are configured in test_helper.exs
+        nodes = Application.fetch_env!(:ecto_psql_extras, :nodes)
 
-        {:ok, node_info}
+        {:ok, node_name: Enum.random(nodes)}
       else
         :ok
       end
@@ -221,7 +220,7 @@ defmodule EctoPSQLExtrasTest do
     end
 
     test "fails when disconnected" do
-      node_name = :"idontexist@nohost"
+      node_name = :"idontexist@127.0.0.1"
 
       assert_raise RuntimeError,
                    "cannot send query to remote node #{inspect(node_name)}. Reason: :nodedown",

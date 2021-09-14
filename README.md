@@ -551,8 +551,8 @@ You need to set the following environment variables in order to execute or run t
 $ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" mix test
 ```
 
-For the distribution tests you need Elixir 1.12 and some flags:
+For the distribution tests you need to add a filter:
 
 ```
-$ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" elixir --sname mytests --cookie mycookie -S mix test --only distribution
+$ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" mix test --only distribution
 ```

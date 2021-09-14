@@ -31,7 +31,6 @@ jobs:
           - pair:
               elixir: 1.12.3
               otp: 24.0.6
-              distribution: true
           - pair:
               elixir: 1.7.4
               otp: 19.3.6
@@ -57,16 +56,4 @@ jobs:
           POSTGRES_PASSWORD: postgres
         run: |
           sleep 4 # wait pg
-          mix test
-
-      - name: Run distribution tests
-        env:
-          POSTGRES_PORT: 5432
-          POSTGRES_HOST: localhost
-          POSTGRES_USER: postgres
-          POSTGRES_DB: ecto_psql_extras_test
-          POSTGRES_PASSWORD: postgres
-        run: |
-          sleep 4 # wait pg
-          elixir --sname mytests --cookie mycookie -S mix test --only distribution
-        if: ${{ matrix.pair.distribution }}
+          mix test --include distribution
