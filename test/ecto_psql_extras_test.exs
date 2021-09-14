@@ -11,6 +11,8 @@ defmodule EctoPSQLExtrasTest do
     outliers_legacy: EctoPSQLExtras.OutliersLegacy
   }
 
+  @skip_queries [:kill_all]
+
   test "all queries define info" do
     for pair <- Map.merge(queries(), @optional_queries) do
       {name, module} = pair
@@ -103,7 +105,10 @@ defmodule EctoPSQLExtrasTest do
   end
 
   describe "database interaction" do
-    @skip_queries [:kill_all]
+    setup do
+      start_supervised!(EctoPSQLExtras.TestRepo)
+      :ok
+    end
 
     test "run queries by param" do
       for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
@@ -167,6 +172,70 @@ defmodule EctoPSQLExtrasTest do
           ).columns
         ) > 0)
       end
+    end
+  end
+
+  describe "integration with a remote node" do
+    setup context do
+      if context[:distribution] do
+        start_supervised!(Dummy.Repo)
+        # Node names are configured in test_helper.exs
+        node_name = Application.fetch_env!(:ecto_psql_extras, :node_name)
+
+        {:ok, node_name: node_name}
+      else
+        :ok
+      end
+    end
+
+    @tag :distribution
+    test "run queries by param", %{node_name: node_name} do
+      assert Node.connect(node_name)
+
+      for query_name <- Map.keys(queries()), query_name not in @skip_queries do
+        assert EctoPSQLExtras.query(query_name, {Dummy.Repo, node_name}, format: :raw).columns !=
+                 []
+      end
+    end
+
+    @tag :distribution
+    test "provide custom param", %{node_name: node_name} do
+      assert Node.connect(node_name)
+
+      assert EctoPSQLExtras.long_running_queries({Dummy.Repo, node_name},
+               format: :raw,
+               args: [threshold: '1 second']
+             ).columns != []
+
+      assert EctoPSQLExtras.query(:long_running_queries, {Dummy.Repo, node_name},
+               format: :raw,
+               args: [threshold: '200 milliseconds']
+             ).columns != []
+    end
+
+    @tag :distribution
+    test "fails when repo is not available", %{node_name: node_name} do
+      assert Node.connect(node_name)
+
+      assert_raise RuntimeError, "repository is not defined on remote node", fn ->
+        EctoPSQLExtras.long_running_queries({Dummy.InvalidRepo, node_name},
+          format: :raw,
+          args: [threshold: '1 second']
+        )
+      end
+    end
+
+    test "fails when disconnected" do
+      node_name = :"idontexist@127.0.0.1"
+
+      assert_raise RuntimeError,
+                   "cannot send query to remote node #{inspect(node_name)}. Reason: :nodedown",
+                   fn ->
+                     EctoPSQLExtras.long_running_queries({Dummy.Repo, node_name},
+                       format: :raw,
+                       args: [threshold: '1 second']
+                     )
+                   end
     end
   end
 end

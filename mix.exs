@@ -8,6 +8,7 @@ defmodule EctoPSQLExtras.Mixfile do
       app: :ecto_psql_extras,
       version: @version,
       elixir: "~> 1.5",
+      elixirc_paths: elixirc_paths(Mix.env()),
       escript: [main_module: EctoPSQLExtras],
       description: description(),
       deps: deps(),
@@ -46,4 +47,8 @@ defmodule EctoPSQLExtras.Mixfile do
       extras: ["README.md"]
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end
