@@ -107,11 +107,12 @@ defmodule EctoPSQLExtrasTest do
   describe "database interaction" do
     setup do
       start_supervised!(EctoPSQLExtras.TestRepo)
+      EctoPSQLExtras.TestRepo.query!("CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
       :ok
     end
 
     test "run queries by param" do
-      for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
+      for query <- Enum.reduce((queries(TestRepo) |> Map.to_list), [], fn(el, acc) ->
         case elem(el, 0) in @skip_queries do
           true ->
             acc
@@ -156,7 +157,7 @@ defmodule EctoPSQLExtrasTest do
     end
 
     test "run queries by method" do
-      for query <- Enum.reduce((queries() |> Map.to_list), [], fn(el, acc) ->
+      for query <- Enum.reduce((queries(TestRepo) |> Map.to_list), [], fn(el, acc) ->
         case elem(el, 0) in @skip_queries do
           true ->
             acc

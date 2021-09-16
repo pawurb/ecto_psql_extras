@@ -7,5 +7,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: ecto_psql_extras_test
       POSTGRES_PASSWORD: postgres
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=200
     ports:
       - '5432:5432'

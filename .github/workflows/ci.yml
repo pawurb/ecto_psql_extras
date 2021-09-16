@@ -10,20 +10,6 @@ jobs:
   mix_test:
     name: mix test (Elixir ${{matrix.pair.elixir}} | Erlang/OTP ${{matrix.pair.otp}})
     runs-on: ubuntu-18.04
-    services:
-      postgres:
-        image: postgres:11.6-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: ecto_psql_extras_test
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     strategy:
       fail-fast: false
       matrix:
@@ -42,6 +28,16 @@ jobs:
         with:
           otp-version: ${{matrix.pair.otp}}
           elixir-version: ${{matrix.pair.elixir}}
+      - name: Run PostgreSQL
+        run: |
+          docker run --env POSTGRES_USER=postgres \
+            --env POSTGRES_DB=ecto_psql_extras_test \
+            --env POSTGRES_PASSWORD=postgres \
+            -d -p 5432:5432 postgres:12.5-alpine \
+            postgres -c shared_preload_libraries=pg_stat_statements \
+            -c pg_stat_statements.track=all \
+            -c max_connections=200
+          sleep 5
       - name: Install Dependencies
         run: |
           mix local.hex --force
