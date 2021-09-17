@@ -537,22 +537,23 @@ This command outputs the Mandelbrot set, calculated through SQL.
 
 ## Development
 
-In order to run this project locally you need PostgreSQL installed and running. Alternatively you
-can use Docker Compose to start PG. Check the `docker-compose.yml.example`.
-
-You need to set the following environment variables in order to execute or run the tests:
-
-* `POSTGRES_URL` - the URL of your local PG. Example: `postgres:postgres@127.0.0.1`.
-* `POSTGRES_DB` - the database name to connect. This DB needs to be created manually. Example: `ecto_psql_extras_test`.
-
-### Running the tests
-
-```
-$ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" mix test
+```bash
+cp docker-compose.yml.sample docker-compose.yml
+docker compose up -d
+PG_VERSION=11 mix test --include distribution \
+  && PG_VERSION=12 mix test --include distribution \
+  && PG_VERSION=13 mix test --include distribution
 ```
 
-For the distribution tests you need to add a filter:
+By default tests will use the following database connection URL compatible with the default `docker-compose.yml`:
 
-```
-$ POSTGRES_URL="postgres:postgres@127.0.0.1" POSTGRES_DB="ecto_psql_extras_test" mix test --only distribution
-```
+`ecto://postgres:postgres@localhost:5432/ecto_psql_extras`
+
+Optionally, you can override the following variables:
+
+`POSTGRES_USER`
+`POSTGRES_USER`
+`POSTGRES_HOST`
+`POSTGRES_DB`
+
+or provide the full `DATABASE_URL` connection URL.

@@ -1,4 +1,6 @@
 defmodule EctoPSQLExtrasTest do
+  Logger.configure([level: :info])
+
   use ExUnit.Case, async: true
 
   import EctoPSQLExtras
