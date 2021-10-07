@@ -73,6 +73,7 @@ defmodule EctoPSQLExtras do
     end
   end
 
+  @default_query_opts [log: false]
   @doc """
   Run a query with `name`, on `repo`, in the given `format`.
 
@@ -87,12 +88,19 @@ defmodule EctoPSQLExtras do
     * `:args` - Overwrites the default arguments for the given query. You can
       check the defaults of each query in its modules defined in this project.
 
+    * `:query_opts` - Overwrites the default options for the Ecto query.
+      Defaults to #{inspect(@default_query_opts)}
+
   """
   def query(name, repo, opts \\ []) do
     query_module = Map.fetch!(queries(repo), name)
     opts = prepare_opts(opts, query_module.info[:default_args])
 
-    result = query!(repo, query_module.query(Keyword.fetch!(opts, :args)))
+    result = query!(
+      repo,
+      query_module.query(Keyword.fetch!(opts, :args)),
+      Keyword.get(opts, :query_opts, @default_query_opts)
+    )
 
     format(
       Keyword.fetch!(opts, :format),
@@ -101,8 +109,10 @@ defmodule EctoPSQLExtras do
     )
   end
 
-  defp query!({repo, node}, query) do
-    case :rpc.call(node, repo, :query!, [query]) do
+  defp query!(repo, query, query_opts \\ @default_query_opts)
+
+  defp query!({repo, node}, query, query_opts) do
+    case :rpc.call(node, repo, :query!, [query, [], query_opts]) do
       {:badrpc, {:EXIT, {:undef, _}}} ->
         raise "repository is not defined on remote node"
 
@@ -114,8 +124,8 @@ defmodule EctoPSQLExtras do
     end
   end
 
-  defp query!(repo, query) do
-    repo.query!(query)
+  defp query!(repo, query, query_opts) do
+    repo.query!(query, [], query_opts)
   end
 
   @doc """
@@ -363,16 +373,9 @@ defmodule EctoPSQLExtras do
   end
 
   defp prepare_opts(opts, default_args) do
-    format = Keyword.get(opts, :format, :ascii)
-
-    args = Keyword.merge(
-      default_args || [],
-      opts[:args] || []
-    )
-
-    [
-      format: format,
-      args: args
-    ]
+    Keyword.merge([
+      format: Keyword.get(opts, :format, :ascii),
+      args: Keyword.merge(default_args || [], opts[:args] || [])
+    ], opts)
   end
 end

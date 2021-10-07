@@ -1,9 +1,9 @@
 defmodule EctoPSQLExtrasTest do
-  Logger.configure([level: :info])
-
   use ExUnit.Case, async: true
 
   import EctoPSQLExtras
+  import ExUnit.CaptureIO
+  import ExUnit.CaptureLog
   alias EctoPSQLExtras.TestRepo
 
   @optional_queries %{
@@ -36,7 +36,7 @@ defmodule EctoPSQLExtrasTest do
   end
 
   defmodule Repo do
-    def query!(_), do: %{rows: Process.get(Repo) || raise "no query result"}
+    def query!(_, _, _), do: %{rows: Process.get(Repo) || raise "no query result"}
   end
 
   describe "pg_stat_statements queries" do
@@ -109,7 +109,7 @@ defmodule EctoPSQLExtrasTest do
   describe "database interaction" do
     setup do
       start_supervised!(EctoPSQLExtras.TestRepo)
-      EctoPSQLExtras.TestRepo.query!("CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
+      EctoPSQLExtras.TestRepo.query!("CREATE EXTENSION IF NOT EXISTS pg_stat_statements;", [], log: false)
       :ok
     end
 
@@ -150,12 +150,19 @@ defmodule EctoPSQLExtrasTest do
     end
 
     test "test legacy API" do
-      assert(length(
-        EctoPSQLExtras.long_running_queries(
-          TestRepo,
-          :raw
-        ).columns
-      ) > 0)
+      warning = capture_io(:stderr, fn ->
+        columns = EctoPSQLExtras.long_running_queries(TestRepo, :raw).columns
+        assert length(columns)  > 0
+      end)
+
+      assert warning =~ "This API is deprecated. Please pass format value as a keyword list: `format: :raw`"
+    end
+
+    test "test query_opts allows for logging" do
+      logs = capture_log(fn ->
+        EctoPSQLExtras.long_running_queries(TestRepo, format: :raw, query_opts: [log: true])
+      end)
+      assert logs =~ "ECTO_PSQL_EXTRAS: All queries longer than the threshold by descending duration"
     end
 
     test "run queries by method" do
