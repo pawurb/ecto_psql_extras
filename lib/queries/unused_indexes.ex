@@ -24,7 +24,8 @@ defmodule EctoPSQLExtras.UnusedIndexes do
     but may not in the future as the table grows */
 
     SELECT
-      schemaname AS schema, relname AS table,
+      schemaname AS schema,
+      relname AS table,
       indexrelname AS index,
       pg_relation_size(i.indexrelid) AS index_size,
       idx_scan as index_scans

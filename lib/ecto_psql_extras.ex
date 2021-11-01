@@ -24,6 +24,7 @@ defmodule EctoPSQLExtras do
   @spec queries(repo() | nil) :: map()
   def queries(repo \\ nil) do
     %{
+      diagnose: EctoPSQLExtras.Diagnose,
       bloat: EctoPSQLExtras.Bloat,
       blocking: EctoPSQLExtras.Blocking,
       cache_hit: EctoPSQLExtras.CacheHit,
@@ -50,9 +51,11 @@ defmodule EctoPSQLExtras do
       kill_all: EctoPSQLExtras.KillAll
     }
     |> Map.merge(pg_stat_statements_queries(repo))
+    |> Map.merge(ssl_used_query(repo))
   end
 
   @pg_stat_statements_query "select installed_version from pg_available_extensions where name='pg_stat_statements'"
+  @ssl_info_query "select installed_version from pg_available_extensions where name='sslinfo'"
 
   defp pg_stat_statements_queries(repo) do
     case repo && pg_stat_statements_version(repo) do
@@ -67,10 +70,24 @@ defmodule EctoPSQLExtras do
     end
   end
 
-  defp pg_stat_statements_version(repo) do
+  def pg_stat_statements_version(repo) do
     case query!(repo, @pg_stat_statements_query) do
       %{rows: [[value]]} when is_binary(value) -> Postgrex.Utils.parse_version(value)
       _ -> nil
+    end
+  end
+
+  defp ssl_used_query(repo) do
+    case repo && ssl_info_enabled(repo) do
+      true -> %{ssl_used: EctoPSQLExtras.SSLUsed}
+      _ -> %{}
+    end
+  end
+
+  def ssl_info_enabled(repo) do
+    case query!(repo, @ssl_info_query) do
+      %{rows: [[value]]} when is_binary(value) -> true
+      _ -> false
     end
   end
 
@@ -93,7 +110,23 @@ defmodule EctoPSQLExtras do
       Defaults to #{inspect(@default_query_opts)}
 
   """
-  def query(name, repo, opts \\ []) do
+
+  def query(name, repo, opts \\ @default_query_opts)
+
+  def query(:diagnose, repo, opts) do
+    query_module = Map.fetch!(queries(repo), :diagnose)
+    result = EctoPSQLExtras.DiagnoseLogic.run(repo)
+
+    opts = prepare_opts(opts, query_module.info[:default_args])
+
+    format(
+      Keyword.fetch!(opts, :format),
+      query_module.info,
+      result
+    )
+  end
+
+  def query(name, repo, opts) do
     query_module = Map.fetch!(queries(repo), name)
     opts = prepare_opts(opts, query_module.info[:default_args])
 
@@ -156,6 +189,13 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def db_settings(repo, opts \\ []), do: query(:db_settings, repo, opts)
+
+  @doc """
+  Run `diagnose` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def diagnose(repo, opts \\ []), do: query(:diagnose, repo, opts)
 
   @doc """
   Run `extensions` query on `repo`, in the given `format`.
@@ -310,6 +350,13 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def outliers(repo, opts \\ []), do: query(:outliers, repo, opts)
+
+  @doc """
+  Run `ssl_used` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def ssl_used(repo, opts \\ []), do: query(:ssl_used, repo, opts)
 
   defp format(:ascii, info, result) do
     names = Enum.map(info.columns, & &1.name)
