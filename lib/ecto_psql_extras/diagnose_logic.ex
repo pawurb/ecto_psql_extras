@@ -82,9 +82,9 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       [] ->
         [true, "No unused indexes detected."]
       _ ->
-        print_indexes = Enum.map(indexes, fn(el) ->
+        print_indexes = Enum.map_join(indexes, ", ", fn(el) ->
           "'#{Enum.at(el, 2)}'"
-        end) |> Enum.join(", ")
+        end)
 
         [false, "Unused indexes detected: #{print_indexes}"]
     end
