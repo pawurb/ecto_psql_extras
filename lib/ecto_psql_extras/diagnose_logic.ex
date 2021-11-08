@@ -133,9 +133,9 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       [] ->
         [true, "No bloated tables or indexes detected."]
       _ ->
-        print_bloat = Enum.map(bloated_objects, fn(el) ->
+        print_bloat = Enum.map_join(bloated_objects, ", ", fn(el) ->
           "#{Enum.at(el, 0)} '#{Enum.at(el, 2)}'"
-        end) |> Enum.join(", ")
+        end)
 
         [false, "Bloat detected: #{print_bloat}"]
     end
