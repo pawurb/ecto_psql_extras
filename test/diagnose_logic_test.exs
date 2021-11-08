@@ -94,7 +94,6 @@ defmodule DiagnoseLogicTest do
 
     result = EctoPSQLExtras.DiagnoseLogic.run(EctoPSQLExtras.TestRepo)
 
-    IO.inspect result
     assert length(result.columns) == 3
     assert Enum.at(Enum.at(result.rows, 0), 1) == "table_cache_hit"
   end
