@@ -58,7 +58,7 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       %Decimal{} = val ->
         val = Decimal.to_float(val) |> Float.round(6)
 
-        if (val >= @index_cache_hit_min_expected ) do
+        if val >= @index_cache_hit_min_expected do
           [true, "Index cache hit ratio is correct: #{Float.round(val, 5)}"]
         else
           [false, "Index cache hit ratio is too low: #{Float.round(val, 5)}"]
