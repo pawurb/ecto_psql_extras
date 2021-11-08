@@ -196,11 +196,10 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
   end
 
   defp ssl_used(repo) do
-    case EctoPSQLExtras.ssl_info_enabled(repo) do
-      true ->
-        ssl_used_data(repo)
-      false ->
-        [false, "ssl_used", "Cannot check connection status because 'ssl_info' extension is not enabled."]
+    if EctoPSQLExtras.ssl_info_enabled(repo) do
+      ssl_used_data(repo)
+    else
+      [false, "ssl_used", "Cannot check connection status because 'ssl_info' extension is not enabled."]
     end
   end
 
