@@ -185,9 +185,9 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       [] ->
         [true, "No queries using significant execution ratio detected."]
       _ ->
-        print_queries = Enum.map(queries, fn(el) ->
+        print_queries = Enum.map_join(queries, ", ", fn(el) ->
           "'#{Enum.at(el, 0) |> String.slice(0, 20)}...' using #{Enum.at(el, 2)}%"
-        end) |> Enum.join(", ")
+        end)
 
         [false, "Queries using significant execution ratio detected: #{print_queries}"]
     end
