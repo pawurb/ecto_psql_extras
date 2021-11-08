@@ -78,9 +78,10 @@ defmodule EctoPSQLExtras do
   end
 
   defp ssl_used_query(repo) do
-    case repo && ssl_info_enabled(repo) do
-      true -> %{ssl_used: EctoPSQLExtras.SSLUsed}
-      _ -> %{}
+    if repo && ssl_info_enabled(repo) do
+      %{ssl_used: EctoPSQLExtras.SSLUsed}
+    else
+      %{}
     end
   end
 
