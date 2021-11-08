@@ -153,9 +153,9 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       [] ->
         [true, "No duplicate indexes detected."]
       _ ->
-        print_indexes = Enum.map(indexes, fn(el) ->
+        print_indexes = Enum.map_join(indexes, ", ", fn(el) ->
           "'#{Enum.at(el, 1)}' - '#{Enum.at(el, 2)}' size #{Enum.at(el, 0)}'"
-        end) |> Enum.join(", ")
+        end)
 
         [false, "Duplicate indexes detected: #{print_indexes}"]
     end
