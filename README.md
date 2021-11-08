@@ -102,7 +102,7 @@ The simplest way to start using `ecto_psql_extras` is to execute a `diagnose` me
 EctoPSQLExtras.diagnose(YourApp.Repo)
 ```
 
-![Diagnose report](https://github.com/pawurb/ecto_psql_extras/raw/pg_diagnose/ecto_stats_diagnose.png)
+![Diagnose report](https://github.com/pawurb/ecto_psql_extras/raw/master/ecto_stats_diagnose.png)
 
 Keep reading to learn about methods that `diagnose` uses under the hood.
 
