@@ -94,6 +94,18 @@ Some methods accept an optional `args` param allowing you to customize queries:
 EctoPSQLExtras.long_running_queries(YourApp.Repo, args: [threshold: "200 milliseconds"])
 ```
 
+## Diagnose report
+
+The simplest way to start using `ecto_psql_extras` is to execute a `diagnose` method. It runs a set of checks and prints out a report highlighting areas that may require additional investigation:
+
+```ruby
+EctoPSQLExtras.diagnose(YourApp.Repo)
+```
+
+![Diagnose report](https://github.com/pawurb/ecto_psql_extras/raw/master/ecto_stats_diagnose.png)
+
+Keep reading to learn about methods that `diagnose` uses under the hood.
+
 ## Available methods
 
 ### `cache_hit`

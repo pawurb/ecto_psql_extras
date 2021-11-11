@@ -22,7 +22,8 @@ defmodule EctoPSQLExtras.Mixfile do
       {:table_rex, "~> 3.1.1"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.15.7"},
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:mock, "~> 0.3.0", only: :test}
     ]
   end
 
