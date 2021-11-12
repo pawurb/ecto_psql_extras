@@ -13,19 +13,29 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
   @outliers_min_exec_ratio 33 # 33%
 
   def run(repo) do
-    %{
-      columns: ["ok", "check_name", "message"],
-      rows: [
-        table_cache_hit(repo),
-        index_cache_hit(repo),
-        unused_indexes(repo),
-        null_indexes(repo),
-        bloat(repo),
-        duplicate_indexes(repo),
-        outliers(repo),
-        ssl_used(repo),
-      ]
-    }
+    try  do
+      %{
+        columns: ["ok", "check_name", "message"],
+        rows: [
+          table_cache_hit(repo),
+          index_cache_hit(repo),
+          unused_indexes(repo),
+          null_indexes(repo),
+          bloat(repo),
+          duplicate_indexes(repo),
+          outliers(repo),
+          ssl_used(repo),
+        ]
+      }
+    rescue
+      _ ->
+        %{
+          columns: ["ok", "check_name", "message"],
+          rows: [
+            [false, "diagnose_error", "There was an error when generating your diagnose report"]
+          ]
+        }
+    end
   end
 
   defp table_cache_hit(repo) do
