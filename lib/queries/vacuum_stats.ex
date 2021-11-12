@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.VacuumStats do
   def info do
     %{
       title: "Dead rows and whether an automatic vacuum is expected to be triggered",
+      index: 16,
       columns: [
         %{name: :schema, type: :string},
         %{name: :table, type: :string},

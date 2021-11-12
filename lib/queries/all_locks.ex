@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.AllLocks do
   def info do
     %{
       title: "Queries with active locks",
+      index: 25,
       columns: [
         %{name: :pid, type: :integer},
         %{name: :relname, type: :string},

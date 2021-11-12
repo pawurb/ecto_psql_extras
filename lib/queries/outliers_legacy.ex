@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.OutliersLegacy do
   def info do
     %{
       title: "Queries that have longest execution time in aggregate",
+      index: 6,
       order_by: [exec_time: :desc],
       default_args: [limit: 10],
       columns: [

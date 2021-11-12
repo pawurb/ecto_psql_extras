@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.Blocking do
   def info do
     %{
       title: "Queries holding locks other queries are waiting to be released",
+      index: 24,
       columns: [
         %{name: :blocked_pid, type: :integer},
         %{name: :blocking_statement, type: :string},

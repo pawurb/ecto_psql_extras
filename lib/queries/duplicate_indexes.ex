@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.DuplicateIndexes do
   def info do
     %{
       title: "Multiple indexes that have the same set of columns, same opclass, expression and predicate.",
+      index: 7,
       columns: [
         %{name: :size, type: :string},
         %{name: :idx1, type: :string},

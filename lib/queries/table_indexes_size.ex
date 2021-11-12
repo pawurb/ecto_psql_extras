@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.TableIndexesSize do
   def info do
     %{
       title: "Total size of all the indexes on each table, descending by size",
+      index: 14,
       order_by: [index_size: :desc],
       columns: [
         %{name: :schema, type: :string},

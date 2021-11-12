@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.LongRunningQueries do
   def info do
     %{
       title: "All queries longer than the threshold by descending duration",
+      index: 22,
       order_by: [duration: :desc],
       default_args: [threshold: "500 milliseconds"],
       columns: [

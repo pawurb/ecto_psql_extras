@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.Bloat do
   def info do
     %{
       title: "Table and index bloat in your database ordered by most wasteful",
+      index: 6,
       order_by: [waste: :desc, bloat: :desc],
       columns: [
         %{name: :type, type: :string},

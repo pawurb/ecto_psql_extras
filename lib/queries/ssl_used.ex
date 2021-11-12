@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.SSLUsed do
   def info do
     %{
       title: "Check if SSL connection is used",
+      index: 9,
       columns: [
         %{name: :ssl_is_used, type: :boolean}
       ]

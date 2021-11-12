@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.CacheHit do
   def info do
     %{
       title: "Index and table hit rate",
+      index: 1,
       columns: [
         %{name: :name, type: :string},
         %{name: :ratio, type: :numeric}

@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.Calls do
   def info do
     %{
       title: "Queries that have the highest frequency of execution",
+      index: 21,
       order_by: [calls: :desc],
       default_args: [limit: 10],
       columns: [

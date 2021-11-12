@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.UnusedIndexes do
   def info do
     %{
       title: "Unused and almost unused indexes",
+      index: 4,
       default_args: [min_scans: 50],
       columns: [
         %{name: :schema, type: :string},

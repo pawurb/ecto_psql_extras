@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.IndexSize do
   def info do
     %{
       title: "The size of indexes, descending by size",
+      index: 18,
       order_by: [size: :desc],
       columns: [
         %{name: :schema, type: :string},

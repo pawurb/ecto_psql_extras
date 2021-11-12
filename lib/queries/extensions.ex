@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.Extensions do
   def info do
     %{
       title: "Available and installed extensions",
+      index: 15,
       order_by: [installed_version: :asc],
       columns: [
         %{name: :name, type: :string},

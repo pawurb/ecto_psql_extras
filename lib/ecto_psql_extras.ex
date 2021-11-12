@@ -7,6 +7,7 @@ defmodule EctoPSQLExtras do
               required(:title) => binary,
               required(:columns) => [%{name: atom, type: atom}],
               optional(:order_by) => [{atom, :asc | :desc}],
+              optional(:index) => integer,
               optional(:default_args) => list,
               optional(:args_for_select) => list
             }

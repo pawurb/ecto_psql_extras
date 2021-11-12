@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.NullIndexes do
   def info do
     %{
       title: "Find indexes with a high ratio of NULL values",
+      index: 5,
       default_args: [min_relation_size_mb: 0],
       columns: [
         %{name: :oid, type: :string},

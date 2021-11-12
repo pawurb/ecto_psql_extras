@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.TableCacheHit do
   def info do
     %{
       title: "Calculates your cache hit rate for reading tables",
+      index: 2,
       order_by: [ratio: :desc],
       columns: [
         %{name: :schema, type: :string},

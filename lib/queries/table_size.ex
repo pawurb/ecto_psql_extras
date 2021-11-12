@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.TableSize do
   def info do
     %{
       title: "Size of the tables (excluding indexes), descending by size",
+      index: 12,
       order_by: [size: :desc],
       columns: [
         %{name: :schema, type: :string},

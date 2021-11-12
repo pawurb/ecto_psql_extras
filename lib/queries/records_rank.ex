@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.RecordsRank do
   def info do
     %{
       title: "All tables and the number of rows in each ordered by number of rows descending",
+      index: 20,
       order_by: [estimated_count: :desc],
       columns: [
         %{name: :schema, type: :string},

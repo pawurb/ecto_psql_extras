@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.DbSettings do
   def info do
     %{
       title: "Queries that have the highest frequency of execution",
+      index: 10,
       columns: [
         %{name: :name, type: :string},
         %{name: :setting, type: :string},

@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.IndexUsage do
   def info do
     %{
       title: "Index hit rate (effective databases are at 99% and up)",
+      index: 17,
       columns: [
         %{name: :schema, type: :string},
         %{name: :name, type: :string},

@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.TotalIndexSize do
   def info do
     %{
       title: "Total size of all indexes in MB",
+      index: 13,
       columns: [
         %{name: :size, type: :bytes}
       ]

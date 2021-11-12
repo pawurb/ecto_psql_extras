@@ -3,7 +3,8 @@ defmodule EctoPSQLExtras.Diagnose do
 
   def info do
     %{
-      title: "Generate a PostgreSQL healthcheck report",
+      title: "Display a PostgreSQL healthcheck report",
+      index: 0,
       order_by: [ok: :asc],
       columns: [
         %{name: :ok, type: :boolean},

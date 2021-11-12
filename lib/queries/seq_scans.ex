@@ -4,6 +4,7 @@ defmodule EctoPSQLExtras.SeqScans do
   def info do
     %{
       title: "Count of sequential scans by table descending by order",
+      index: 19,
       order_by: [count: :desc],
       columns: [
         %{name: :schema, type: :string},
