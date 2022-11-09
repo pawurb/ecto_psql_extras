@@ -49,7 +49,8 @@ defmodule EctoPSQLExtras do
       duplicate_indexes: EctoPSQLExtras.DuplicateIndexes,
       null_indexes: EctoPSQLExtras.NullIndexes,
       vacuum_stats: EctoPSQLExtras.VacuumStats,
-      kill_all: EctoPSQLExtras.KillAll
+      kill_all: EctoPSQLExtras.KillAll,
+      connections: EctoPSQLExtras.Connections
     }
     |> Map.merge(pg_stat_statements_queries(repo))
     |> Map.merge(ssl_used_query(repo))
@@ -359,6 +360,13 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def ssl_used(repo, opts \\ []), do: query(:ssl_used, repo, opts)
+
+  @doc """
+  Run `connections` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def connections(repo, opts \\ []), do: query(:connections, repo, opts)
 
   defp format(:ascii, info, result) do
     names = Enum.map(info.columns, & &1.name)
