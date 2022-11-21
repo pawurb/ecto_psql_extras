@@ -555,6 +555,48 @@ EctoPSQLExtras.mandelbrot(YourApp.Repo)
 
 This command outputs the Mandelbrot set, calculated through SQL.
 
+### `connections`
+
+```
+
+EctoPSQLExtras.connections(YourApp.Repo)
++----------------------------------------------+
+|  Shows all the active database connections   |
++----------+----------------+------------------+
+| username | client_address | application_name |
++----------+----------------+------------------+
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | your_app         |
+| postgres | 172.20.0.1/32  | psql             |
++----------+----------------+------------------+
+```
+
+This command returns the list of all active connections to the database.
+
+To have `application_name` populate in connections output, you need to configure your Phoenix applications' Repo by adding the `parameters` and set `application_name`:
+
+```elixir
+config :your_app, YourApp.Repo,
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  database: "your_app_dev",
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10,
+  parameters: [
+    {:application_name, "your_app"}
+  ]
+```
+
 ## Query sources
 
 - [https://github.com/heroku/heroku-pg-extras](https://github.com/heroku/heroku-pg-extras)
