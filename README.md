@@ -44,7 +44,19 @@ EctoPSQLExtras.query(:extensions, YourApp.Repo)
 You should see the similar line in the output:
 
 ```bash
-| pg_stat_statements  | 1.7  | 1.7 | track execution statistics of all SQL statements executed |
++---------------------------------------------------------------------------------------------------------------------------------+
+|                                               Available and installed extensions                                                |
++--------------------+-----------------+-------------------+----------------------------------------------------------------------+
+| name               | default_version | installed_version | comment                                                              |
++--------------------+-----------------+-------------------+----------------------------------------------------------------------+
+| plpgsql            | 1.0             | 1.0               | PL/pgSQL procedural language                                         |
+| amcheck            | 1.2             |                   | functions for verifying relation integrity                           |
+| autoinc            | 1.0             |                   | functions for autoincrementing fields                                |
+| bloom              | 1.0             |                   | bloom access method - signature file based index                     |
+| sslinfo            | 1.2             |                   | information about SSL certificates                                   |
+| tablefunc          | 1.0             |                   | functions that manipulate whole tables, including crosstab           |
+| xml2               | 1.1             |                   | XPath querying and XSLT                                              |
++--------------------+-----------------+-------------------+----------------------------------------------------------------------+
 ```
 
 ## Usage
@@ -88,10 +100,31 @@ You can also run queries by passing their name to the `query` method:
 EctoPSQLExtras.query(:cache_hit, YourApp.Repo)
 ```
 
+```bash
++----------------+------------------------+
+|        Index and table hit rate         |
++----------------+------------------------+
+| name           | ratio                  |
++----------------+------------------------+
+| index hit rate | 0.97796610169491525424 |
+| table hit rate | 0.96724294813466787989 |
++----------------+------------------------+
+```
+
 Some methods accept an optional `args` param allowing you to customize queries:
 
 ```elixir
 EctoPSQLExtras.long_running_queries(YourApp.Repo, args: [threshold: "200 milliseconds"])
+```
+
+```bash
++----------------------------------------------------------------+
+|  All queries longer than the threshold by descending duration  |
++-----------------------+---------------------+------------------+
+| pid                   | duration            | query            |
++-----------------------+---------------------+------------------+
+| No results            |                     |                  |
++-----------------------+---------------------+------------------+
 ```
 
 ## Diagnose report
@@ -102,7 +135,22 @@ The simplest way to start using `ecto_psql_extras` is to execute a `diagnose` me
 EctoPSQLExtras.diagnose(YourApp.Repo)
 ```
 
-![Diagnose report](https://github.com/pawurb/ecto_psql_extras/raw/master/ecto_stats_diagnose.png)
+```bash
++----------------------------------------------------------------------------------------------------------+
+|                                 Display a PostgreSQL healthcheck report                                  |
++-------+-------------------+------------------------------------------------------------------------------+
+| ok    | check_name        | message                                                                      |
++-------+-------------------+------------------------------------------------------------------------------+
+| false | table_cache_hit   | Table cache hit ratio is not yet reported.                                   |
+| false | index_cache_hit   | Index cache hit ratio is too low: 0.0                                        |
+| true  | unused_indexes    | No unused indexes detected.                                                  |
+| true  | null_indexes      | No null indexes detected.                                                    |
+| true  | bloat             | No bloated tables or indexes detected.                                       |
+| true  | duplicate_indexes | No duplicate indexes detected.                                               |
+| false | outliers          | Cannot check outliers because 'pg_stat_statements' extension is not enabled. |
+| false | ssl_used          | Cannot check connection status because 'ssl_info' extension is not enabled.  |
++-------+-------------------+------------------------------------------------------------------------------+
+```
 
 Keep reading to learn about methods that `diagnose` uses under the hood.
 
@@ -114,10 +162,14 @@ Keep reading to learn about methods that `diagnose` uses under the hood.
 
 EctoPSQLExtras.cache_hit(YourApp.Repo)
 
-      name      |         ratio
-----------------+------------------------
- index hit rate | 0.99957765013541945832
- table hit rate |                   1.00
++----------------+------------------------+
+|        Index and table hit rate         |
++----------------+------------------------+
+| name           | ratio                  |
++----------------+------------------------+
+| index hit rate | 0.97796610169491525424 |
+| table hit rate | 0.96724294813466787989 |
++----------------+------------------------+
 (2 rows)
 ```
 
@@ -131,12 +183,13 @@ This command provides information on the efficiency of the buffer cache, for bot
 
 EctoPSQLExtras.index_cache_hit(YourApp.Repo)
 
-| name                  | buffer_hits | block_reads | total_read | ratio             |
-+-----------------------+-------------+-------------+------------+-------------------+
-| teams                 | 187665      | 109         | 187774     | 0.999419514948821 |
-| subscriptions         | 5160        | 6           | 5166       | 0.99883855981417  |
-| plans                 | 5718        | 9           | 5727       | 0.998428496595076 |
-(truncated results for brevity)
++-----------------------------------------------------------------------------+
+|             Calculates your cache hit rate for reading indexes              |
++--------+-------------------+-------------+-------------+------------+-------+
+| schema | name              | buffer_hits | block_reads | total_read | ratio |
++--------+-------------------+-------------+-------------+------------+-------+
+| public | schema_migrations | 0           | 1           | 1          | 0.0   |
++--------+-------------------+-------------+-------------+------------+-------+
 ```
 
 The same as `cache_hit` with each table's indexes cache hit info displayed separately.
@@ -149,12 +202,13 @@ The same as `cache_hit` with each table's indexes cache hit info displayed separ
 
 EctoPSQLExtras.table_cache_hit(YourApp.Repo)
 
-| name                  | buffer_hits | block_reads | total_read | ratio             |
-+-----------------------+-------------+-------------+------------+-------------------+
-| plans                 | 32123       | 2           | 32125      | 0.999937743190662 |
-| subscriptions         | 95021       | 8           | 95029      | 0.999915815172211 |
-| teams                 | 171637      | 200         | 171837     | 0.99883610631005  |
-(truncated results for brevity)
++-----------------------------------------------------------------------------+
+|              Calculates your cache hit rate for reading tables              |
++--------+-------------------+-------------+-------------+------------+-------+
+| schema | name              | buffer_hits | block_reads | total_read | ratio |
++--------+-------------------+-------------+-------------+------------+-------+
+| public | schema_migrations | 0           | 0           | 0          |       |
++--------+-------------------+-------------+-------------+------------+-------+
 ```
 
 The same as `cache_hit` with each table's cache hit info displayed separately.
@@ -167,14 +221,24 @@ The same as `cache_hit` with each table's cache hit info displayed separately.
 
 EctoPSQLExtras.db_settings(YourApp.Repo)
 
-             name             | setting | unit |
-------------------------------+---------+------+
- checkpoint_completion_target | 0.7     |      |
- default_statistics_target    | 100     |      |
- effective_cache_size         | 1350000 | 8kB  |
- effective_io_concurrency     | 1       |      |
-(truncated results for brevity)
-
++------------------------------------------------------------------------------------------------------------------------------------------+
+|                                           Queries that have the highest frequency of execution                                           |
++------------------------------+---------+------+------------------------------------------------------------------------------------------+
+| name                         | setting | unit | short_desc                                                                               |
++------------------------------+---------+------+------------------------------------------------------------------------------------------+
+| checkpoint_completion_target | 0.5     |      | Time spent flushing dirty buffers during checkpoint, as fraction of checkpoint interval. |
+| default_statistics_target    | 100     |      | Sets the default statistics target.                                                      |
+| effective_cache_size         | 524288  | 8kB  | Sets the planner's assumption about the total size of the data caches.                   |
+| effective_io_concurrency     | 1       |      | Number of simultaneous requests that can be handled efficiently by the disk subsystem.   |
+| maintenance_work_mem         | 65536   | kB   | Sets the maximum memory to be used for maintenance operations.                           |
+| max_connections              | 100     |      | Sets the maximum number of concurrent connections.                                       |
+| max_wal_size                 | 1024    | MB   | Sets the WAL size that triggers a checkpoint.                                            |
+| min_wal_size                 | 80      | MB   | Sets the minimum size to shrink the WAL to.                                              |
+| random_page_cost             | 4       |      | Sets the planner's estimate of the cost of a nonsequentially fetched disk page.          |
+| shared_buffers               | 16384   | 8kB  | Sets the number of shared memory buffers used by the server.                             |
+| wal_buffers                  | 512     | 8kB  | Sets the number of disk-page buffers in shared memory for WAL.                           |
+| work_mem                     | 4096    | kB   | Sets the maximum memory to be used for query workspaces.                                 |
++------------------------------+---------+------+------------------------------------------------------------------------------------------+
 ```
 
 This method displays values for selected PostgreSQL settings. You can compare them with settings recommended by [PGTune](https://pgtune.leopard.in.ua/#/) and tweak values to improve performance.
@@ -187,14 +251,13 @@ This method displays values for selected PostgreSQL settings. You can compare th
 
 EctoPSQLExtras.index_usage(YourApp.Repo)
 
-       relname       | percent_of_times_index_used | rows_in_table
----------------------+-----------------------------+---------------
- events              |                          65 |       1217347
- app_infos           |                          74 |        314057
- app_infos_user_info |                           0 |        198848
- user_info           |                           5 |         94545
- delayed_jobs        |                          27 |             0
-(5 rows)
++--------------------------------------------------------------------------+
+|          Index hit rate (effective databases are at 99% and up)          |
++--------+-------------------+-----------------------------+---------------+
+| schema | name              | percent_of_times_index_used | rows_in_table |
++--------+-------------------+-----------------------------+---------------+
+| public | schema_migrations |                             | 0             |
++--------+-------------------+-----------------------------+---------------+
 ```
 
 This command provides information on the efficiency of indexes, represented as what percentage of total scans were index scans. A low percentage can indicate under indexing, or wrong data being indexed.
@@ -205,15 +268,13 @@ This command provides information on the efficiency of indexes, represented as w
 
 EctoPSQLExtras.locks(YourApp.Repo)
 
- procpid | relname | transactionid | granted |     query_snippet     | mode             |       age
----------+---------+---------------+---------+-----------------------+-------------------------------------
-   31776 |         |               | t       | <IDLE> in transaction | ExclusiveLock    |  00:19:29.837898
-   31776 |         |          1294 | t       | <IDLE> in transaction | RowExclusiveLock |  00:19:29.837898
-   31912 |         |               | t       | select * from hello;  | ExclusiveLock    |  00:19:17.94259
-    3443 |         |               | t       |                      +| ExclusiveLock    |  00:00:00
-         |         |               |         |    select            +|                  |
-         |         |               |         |      pg_stat_activi   |                  |
-(4 rows)
++-----------------------------------------------------------------------------+
+|                     Queries with active exclusive locks                     |
++------------+---------+---------------+---------+---------------+------+-----+
+| pid        | relname | transactionid | granted | query_snippet | mode | age |
++------------+---------+---------------+---------+---------------+------+-----+
+| No results |         |               |         |               |      |     |
++------------+---------+---------------+---------+---------------+------+-----+
 ```
 
 This command displays queries that have taken out an exclusive lock on a relation. Exclusive locks typically prevent other operations on that relation from taking place, and can be a cause of "hung" queries that are waiting for a lock to be granted.
@@ -226,6 +287,13 @@ This command displays queries that have taken out an exclusive lock on a relatio
 
 EctoPSQLExtras.all_locks(YourApp.Repo)
 
++-----------------------------------------------------------------------------+
+|                          Queries with active locks                          |
++------------+---------+---------------+---------+---------------+------+-----+
+| pid        | relname | transactionid | granted | query_snippet | mode | age |
++------------+---------+---------------+---------+---------------+------+-----+
+| No results |         |               |         |               |      |     |
++------------+---------+---------------+---------+---------------+------+-----+
 ```
 
 This command displays all the current locks, regardless of their type.
@@ -282,10 +350,13 @@ This command is much like `pg:outliers`, but ordered by the number of times a st
 
 EctoPSQLExtras.blocking(YourApp.Repo)
 
- blocked_pid |    blocking_statement    | blocking_duration | blocking_pid |                                        blocked_statement                           | blocked_duration
--------------+--------------------------+-------------------+--------------+------------------------------------------------------------------------------------+------------------
-         461 | select count(*) from app | 00:00:03.838314   |        15682 | UPDATE "app" SET "updated_at" = '2013-03-04 15:07:04.746688' WHERE "id" = 12823149 | 00:00:03.821826
-(1 row)
++------------------------------------------------------------------------------------------------------------+
+|                       Queries holding locks other queries are waiting to be released                       |
++-------------+--------------------+-------------------+--------------+-------------------+------------------+
+| blocked_pid | blocking_statement | blocking_duration | blocking_pid | blocked_statement | blocked_duration |
++-------------+--------------------+-------------------+--------------+-------------------+------------------+
+| No results  |                    |                   |              |                   |                  |
++-------------+--------------------+-------------------+--------------+-------------------+------------------+
 ```
 
 This command displays statements that are currently holding locks that other statements are waiting to be released. This can be used in conjunction with `pg:locks` to determine which statements need to be terminated in order to resolve lock contention.
@@ -298,10 +369,13 @@ This command displays statements that are currently holding locks that other sta
 
 EctoPSQLExtras.total_index_size(YourApp.Repo)
 
-  size
--------
- 28194 MB
-(1 row)
++---------------------------------+
+| Total size of all indexes in MB |
++---------------------------------+
+| size                            |
++---------------------------------+
+| 8.0 KB                          |
++---------------------------------+
 ```
 
 This command displays the total size of all indexes on the database, in MB. It is calculated by taking the number of pages (reported in `relpages`) and multiplying it by the page size (8192 bytes).
@@ -312,19 +386,13 @@ This command displays the total size of all indexes on the database, in MB. It i
 
 EctoPSQLExtras.index_size(YourApp.Repo)
 
-                             name                              |  size
----------------------------------------------------------------+---------
- idx_activity_attemptable_and_type_lesson_enrollment           | 5196 MB
- index_enrollment_attemptables_by_attempt_and_last_in_group    | 4045 MB
- index_attempts_on_student_id                                  | 2611 MB
- enrollment_activity_attemptables_pkey                         | 2513 MB
- index_attempts_on_student_id_final_attemptable_type           | 2466 MB
- attempts_pkey                                                 | 2466 MB
- index_attempts_on_response_id                                 | 2404 MB
- index_attempts_on_enrollment_id                               | 1957 MB
- index_enrollment_attemptables_by_enrollment_activity_id       | 1789 MB
- enrollment_activities_pkey                                    |  458 MB
-(truncated results for brevity)
++------------------------------------------+
+| The size of indexes, descending by size  |
++--------+------------------------+--------+
+| schema | name                   | size   |
++--------+------------------------+--------+
+| public | schema_migrations_pkey | 8.0 KB |
++--------+------------------------+--------+
 ```
 
 This command displays the size of each each index in the database, in MB. It is calculated by taking the number of pages (reported in `relpages`) and multiplying it by the page size (8192 bytes).
@@ -335,14 +403,13 @@ This command displays the size of each each index in the database, in MB. It is 
 
 EctoPSQLExtras.table_size(YourApp.Repo)
 
-                             name                              |  size
----------------------------------------------------------------+---------
- learning_coaches                                              |  196 MB
- states                                                        |  145 MB
- grade_levels                                                  |  111 MB
- charities_customers                                           |   73 MB
- charities                                                     |   66 MB
-(truncated results for brevity)
++--------------------------------------------------------------+
+|  Size of the tables (excluding indexes), descending by size  |
++----------------+---------------------------+-----------------+
+| schema         | name                      | size            |
++----------------+---------------------------+-----------------+
+| public         | schema_migrations         | 0 bytes         |
++----------------+---------------------------+-----------------+
 ```
 
 This command displays the size of each table and materialized view in the database, in MB. It is calculated by using the system administration function `pg_table_size()`, which includes the size of the main data fork, free space map, visibility map and TOAST data.
@@ -353,14 +420,13 @@ This command displays the size of each table and materialized view in the databa
 
 EctoPSQLExtras.table_indexes_size(YourApp.Repo)
 
-                             table                             | indexes_size
----------------------------------------------------------------+--------------
- learning_coaches                                              |    153 MB
- states                                                        |    125 MB
- charities_customers                                           |     93 MB
- charities                                                     |     16 MB
- grade_levels                                                  |     11 MB
-(truncated results for brevity)
++-----------------------------------------------------------------+
+| Total size of all the indexes on each table, descending by size |
++----------------+---------------------------+--------------------+
+| schema         | table                     | index_size         |
++----------------+---------------------------+--------------------+
+| public         | schema_migrations         | 8.0 KB             |
++----------------+---------------------------+--------------------+
 ```
 
 This command displays the total size of indexes for each table and materialized view, in MB. It is calculated by using the system administration function `pg_indexes_size()`.
@@ -371,14 +437,13 @@ This command displays the total size of indexes for each table and materialized 
 
 EctoPSQLExtras.total_table_size(YourApp.Repo)
 
-                             name                              |  size
----------------------------------------------------------------+---------
- learning_coaches                                              |  349 MB
- states                                                        |  270 MB
- charities_customers                                           |  166 MB
- grade_levels                                                  |  122 MB
- charities                                                     |   82 MB
-(truncated results for brevity)
++-------------------------------------------------------------+
+| Size of the tables (including indexes), descending by size  |
++----------------+---------------------------+----------------+
+| schema         | name                      | size           |
++----------------+---------------------------+----------------+
+| public         | schema_migrations         | 8.0 KB         |
++----------------+---------------------------+----------------+
 ```
 
 This command displays the total size of each table and materialized view in the database, in MB. It is calculated by using the system administration function `pg_total_relation_size()`, which includes table size, total index size and TOAST data.
@@ -389,12 +454,13 @@ This command displays the total size of each table and materialized view in the 
 
 EctoPSQLExtras.unused_indexes(YourApp.Repo, args: [min_scans: 20])
 
-          table      |                       index                | index_size | index_scans
----------------------+--------------------------------------------+------------+-------------
- public.grade_levels | index_placement_attempts_on_grade_level_id | 97 MB      |           0
- public.observations | observations_attrs_grade_resources         | 33 MB      |           0
- public.messages     | user_resource_id_idx                       | 12 MB      |           0
-(3 rows)
++-------------------------------------------------------+
+|           Unused and almost unused indexes            |
++------------+-------+-------+------------+-------------+
+| schema     | table | index | index_size | index_scans |
++------------+-------+-------+------------+-------------+
+| No results |       |       |            |             |
++------------+-------+-------+------------+-------------+
 ```
 
 This command displays indexes that have < 50 scans recorded against them, and are greater than 5 pages in size, ordered by size relative to the number of index scans. This command is generally useful for eliminating indexes that are unused, which can impact write performance, as well as read performance should they occupy space in memory.
@@ -407,9 +473,13 @@ This command displays indexes that have < 50 scans recorded against them, and ar
 
 EctoPSQLExtras.duplicate_indexes(YourApp.Repo)
 
-| size       |  idx1        |  idx2          |  idx3    |  idx4     |
-+------------+--------------+----------------+----------+-----------+
-| 128 k      | users_pkey   | index_users_id |          |           |
++-----------------------------------------------------------------------------------------------+
+|  Multiple indexes that have the same set of columns, same opclass, expression and predicate.  |
++-----------------------+-----------------+-----------------+-----------------+-----------------+
+| size                  | idx1            | idx2            | idx3            | idx4            |
++-----------------------+-----------------+-----------------+-----------------+-----------------+
+| No results            |                 |                 |                 |                 |
++-----------------------+-----------------+-----------------+-----------------+-----------------+
 ```
 
 This command displays multiple indexes that have the same set of columns, same opclass, expression and predicate - which make them equivalent. Usually it's safe to drop one of them.
@@ -420,12 +490,13 @@ This command displays multiple indexes that have the same set of columns, same o
 
 EctoPSQLExtras.null_indexes(YourApp.Repo, args: [min_relation_size_mb: 10])
 
-   oid   |         index      | index_size | unique | indexed_column | null_frac | expected_saving
----------+--------------------+------------+--------+----------------+-----------+-----------------
-  183764 | users_reset_token  | 1445 MB    | t      | reset_token    |   97.00%  | 1401 MB
-   88732 | plan_cancelled_at  | 539 MB     | f      | cancelled_at   |    8.30%  | 44 MB
- 9827345 | users_email        | 18 MB      | t      | email          |   28.67%  | 5160 kB
-
++-----------------------------------------------------------------------------------------+
+|                      Find indexes with a high ratio of NULL values                      |
++------------+-------+------------+--------+----------------+-----------+-----------------+
+| oid        | index | index_size | unique | indexed_column | null_frac | expected_saving |
++------------+-------+------------+--------+----------------+-----------+-----------------+
+| No results |       |            |        |                |           |                 |
++------------+-------+------------+--------+----------------+-----------+-----------------+
 ```
 
 This commands displays indexes that contain `NULL` values. A high ratio of `NULL` values means that using a partial index excluding them will be beneficial in case they are not used for searching.
@@ -438,18 +509,13 @@ This commands displays indexes that contain `NULL` values. A high ratio of `NULL
 
 EctoPSQLExtras.seq_scans(YourApp.Repo)
 
-
-               name                |  count
------------------------------------+----------
- learning_coaches                  | 44820063
- states                            | 36794975
- grade_levels                      | 13972293
- charities_customers               |  8615277
- charities                         |  4316276
- messages                          |  3922247
- contests_customers                |  2915972
- classroom_goals                   |  2142014
-(truncated results for brevity)
++---------------------------------------------------------+
+| Count of sequential scans by table descending by order  |
++---------------+--------------------------+--------------+
+| schema        | name                     | count        |
++---------------+--------------------------+--------------+
+| public        | schema_migrations        | 2            |
++---------------+--------------------------+--------------+
 ```
 
 This command displays the number of sequential scans recorded against all tables, descending by count of sequential scans. Tables that have very high numbers of sequential scans may be under-indexed, and it may be worth investigating queries that read from these tables.
@@ -463,12 +529,13 @@ This command displays the number of sequential scans recorded against all tables
 EctoPSQLExtras.long_running_queries(YourApp.Repo, args: [threshold: "200 milliseconds"])
 
 
-  pid  |    duration     |                                      query
--------+-----------------+---------------------------------------------------------------------------------------
- 19578 | 02:29:11.200129 | EXPLAIN SELECT  "students".* FROM "students"  WHERE "students"."id" = 1450645 LIMIT 1
- 19465 | 02:26:05.542653 | EXPLAIN SELECT  "students".* FROM "students"  WHERE "students"."id" = 1889881 LIMIT 1
- 19632 | 02:24:46.962818 | EXPLAIN SELECT  "students".* FROM "students"  WHERE "students"."id" = 1581884 LIMIT 1
-(truncated results for brevity)
++----------------------------------------------------------------+
+|  All queries longer than the threshold by descending duration  |
++-----------------------+---------------------+------------------+
+| pid                   | duration            | query            |
++-----------------------+---------------------+------------------+
+| No results            |                     |                  |
++-----------------------+---------------------+------------------+
 ```
 
 This command displays currently running queries, that have been running for longer than 5 minutes, descending by duration. Very long running queries can be a source of multiple issues, such as preventing DDL statements completing or vacuum being unable to update `relfrozenxid`.
@@ -479,15 +546,13 @@ This command displays currently running queries, that have been running for long
 
 EctoPSQLExtras.records_rank(YourApp.Repo)
 
-               name                | estimated_count
------------------------------------+-----------------
- tastypie_apiaccess                |          568891
- notifications_event               |          381227
- core_todo                         |          178614
- core_comment                      |          123969
- notifications_notification        |          102101
- django_session                    |           68078
- (truncated results for brevity)
++----------------------------------------------------------------------------------+
+|  All tables and the number of rows in each ordered by number of rows descending  |
++--------------------+-------------------------------+-----------------------------+
+| schema             | name                          | estimated_count             |
++--------------------+-------------------------------+-----------------------------+
+| public             | schema_migrations             | 0                           |
++--------------------+-------------------------------+-----------------------------+
 ```
 
 This command displays an estimated count of rows per table, descending by estimated count. The estimated count is derived from `n_live_tup`, which is updated by vacuum operations. Due to the way `n_live_tup` is populated, sparse vs. dense pages can result in estimations that are significantly out from the real count of rows.
@@ -498,15 +563,21 @@ This command displays an estimated count of rows per table, descending by estima
 
 EctoPSQLExtras.bloat(YourApp.Repo)
 
-
- type  | schemaname |           object_name         | bloat |   waste
--------+------------+-------------------------------+-------+----------
- table | public     | bloated_table                 |   1.1 | 98 MB
- table | public     | other_bloated_table           |   1.1 | 58 MB
- index | public     | bloated_table::bloated_index  |   3.7 | 34 MB
- table | public     | clean_table                   |   0.2 | 3808 kB
- table | public     | other_clean_table             |   0.3 | 1576 kB
- (truncated results for brevity)
++-----------------------------------------------------------------------------------------------------+
+|                   Table and index bloat in your database ordered by most wasteful                   |
++-------+------------+--------------------------------------------------------------+-------+---------+
+| type  | schemaname | object_name                                                  | bloat | waste   |
++-------+------------+--------------------------------------------------------------+-------+---------+
+| index | pg_catalog | pg_depend::pg_depend_reference_index                         | 1.2   | 64.0 KB |
+| table | pg_catalog | pg_depend                                                    | 1.1   | 24.0 KB |
+| index | pg_catalog | pg_ts_config_map::pg_ts_config_map_index                     | 2.0   | 16.0 KB |
+| index | pg_catalog | pg_amproc::pg_amproc_oid_index                               | 2.0   | 16.0 KB |
+| index | pg_catalog | pg_amproc::pg_amproc_fam_proc_index                          | 2.0   | 16.0 KB |
+| table | pg_catalog | pg_class                                                     | 1.2   | 16.0 KB |
+| index | pg_catalog | pg_shdepend::pg_shdepend_depender_index                      | 2.0   | 8.0 KB  |
+| index | pg_catalog | pg_rewrite::pg_rewrite_rel_rulename_index                    | 0.2   | 0 bytes |
+| index | pg_catalog | pg_attribute::pg_attribute_relid_attnum_index                | 0.2   | 0 bytes |
++-------+------------+--------------------------------------------------------------+-------+---------+
 ```
 
 This command displays an estimation of table "bloat" – space allocated to a relation that is full of dead tuples, that has yet to be reclaimed. Tables that have a high bloat ratio, typically 10 or greater, should be investigated to see if vacuuming is aggressive enough, and can be a sign of high table churn.
@@ -519,14 +590,13 @@ This command displays an estimation of table "bloat" – space allocated to a re
 
 EctoPSQLExtras.vacuum_stats(YourApp.Repo)
 
- schema |         table         | last_vacuum | last_autovacuum  |    rowcount    | dead_rowcount  | autovacuum_threshold | expect_autovacuum
---------+-----------------------+-------------+------------------+----------------+----------------+----------------------+-------------------
- public | log_table             |             | 2013-04-26 17:37 |         18,030 |              0 |          3,656       |
- public | data_table            |             | 2013-04-26 13:09 |             79 |             28 |             66       |
- public | other_table           |             | 2013-04-26 11:41 |             41 |             47 |             58       |
- public | queue_table           |             | 2013-04-26 17:39 |             12 |          8,228 |             52       | yes
- public | picnic_table          |             |                  |             13 |              0 |             53       |
- (truncated results for brevity)
++-----------------------------------------------------------------------------------------------------------------------------------------+
+|                                  Dead rows and whether an automatic vacuum is expected to be triggered                                  |
++--------+-------------------+-------------+-----------------+----------------+----------------+----------------------+-------------------+
+| schema | table             | last_vacuum | last_autovacuum | rowcount       | dead_rowcount  | autovacuum_threshold | expect_autovacuum |
++--------+-------------------+-------------+-----------------+----------------+----------------+----------------------+-------------------+
+| public | schema_migrations |             |                 |              0 |              0 |             50       |                   |
++--------+-------------------+-------------+-----------------+----------------+----------------+----------------------+-------------------+
 ```
 
 This command displays statistics related to vacuum operations for each table, including an estimation of dead rows, last autovacuum and the current autovacuum threshold. This command can be useful when determining if current vacuum thresholds require adjustments, and to determine when the table was last vacuumed.
@@ -535,6 +605,22 @@ This command displays statistics related to vacuum operations for each table, in
 
 ```elixir
 EctoPSQLExtras.kill_all(YourApp.Repo)
+
++------------------------------------------+
+| Kill all the active database connections |
++------------------------------------------+
+| killed                                   |
++------------------------------------------+
+| true                                     |
+| true                                     |
+| true                                     |
+| true                                     |
+| true                                     |
+| true                                     |
+| true                                     |
+| true                                     |
+| true                                     |
++------------------------------------------+
 ```
 
 This commands kills all the currently active connections to the database. It can be useful as a last resort when your database is stuck in a deadlock.
@@ -543,6 +629,20 @@ This commands kills all the currently active connections to the database. It can
 
 ```elixir
 EctoPSQLExtras.extensions(YourApp.Repo)
+
++---------------------------------------------------------------------------------------------------------------------------------+
+|                                               Available and installed extensions                                                |
++--------------------+-----------------+-------------------+----------------------------------------------------------------------+
+| name               | default_version | installed_version | comment                                                              |
++--------------------+-----------------+-------------------+----------------------------------------------------------------------+
+| plpgsql            | 1.0             | 1.0               | PL/pgSQL procedural language                                         |
+| amcheck            | 1.2             |                   | functions for verifying relation integrity                           |
+| autoinc            | 1.0             |                   | functions for autoincrementing fields                                |
+| bloom              | 1.0             |                   | bloom access method - signature file based index                     |
+| sslinfo            | 1.2             |                   | information about SSL certificates                                   |
+| tablefunc          | 1.0             |                   | functions that manipulate whole tables, including crosstab           |
+| xml2               | 1.1             |                   | XPath querying and XSLT                                              |
++--------------------+-----------------+-------------------+----------------------------------------------------------------------+
 ```
 
 This command lists all the currently installed and available PostgreSQL extensions.
@@ -551,6 +651,115 @@ This command lists all the currently installed and available PostgreSQL extensio
 
 ```elixir
 EctoPSQLExtras.mandelbrot(YourApp.Repo)
+
++--------------------------------------------------------------------------------------------------------+
+|                                           The mandelbrot set                                           |
++--------------------------------------------------------------------------------------------------------+
+| art                                                                                                    |
++--------------------------------------------------------------------------------------------------------+
+|              ....................................................................................      |
+|             .......................................................................................    |
+|            .........................................................................................   |
+|           ...........................................................................................  |
+|         ....................................................,,,,,,,,,................................. |
+|        ................................................,,,,,,,,,,,,,,,,,,............................. |
+|       ..............................................,,,,,,,,,,,,,,,,,,,,,,,,.......................... |
+|      ............................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,........................ |
+|      ..........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,...................... |
+|     .........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.................... |
+|    ........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,................... |
+|   .......................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,................. |
+|  .......................................,,,,,,,,,,,,,,,,,,,,,,,,--,,,,,,,,,,,,,,,,,,,,................ |
+| ......................................,,,,,,,,,,,,,,,,,,,,,,,,,,-+--,,,,,,,,,,,,,,,,,,,............... |
+| ....................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----,,,,,,,,,,,,,,,,,,,.............. |
+| ...................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,--- -----,,,,,,,,,,,,,,,,,............. |
+| .................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---++--++,,,,,,,,,,,,,,,,,,............ |
+| ................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----%++---,,,,,,,,,,,,,,,,,............ |
+| ..............................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----+%----,,,,,,,,,,,,,,,,,,........... |
+| .............................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----- %%+----,,,,,,,,,,,,,,,,,,.......... |
+| ...........................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---%-+%   ----,,,,,,,,,,,,,,,,,,,......... |
+| ..........................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---+ +##  %+%---,,,,,,,,,,,,,,,,,,......... |
+| ........................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----#      # +---,,,,,,,,,,,,,,,,,,........ |
+| .......................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-------%       %-----,,,,,,,,,,,,,,,,,........ |
+| .....................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------+         ------,,,,,,,,,,,,,,,,,....... |
+| ....................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----------+@       +-----------,,,,,,,,,,,,....... |
+| ..................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----@-------++       ++-----------,,,,,,,,,,,,...... |
+| .................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,--+@% ---+ +@%%@     %%+@+@%------+-,,,,,,,,,,,...... |
+| ................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----  # ++%               % @-----++--,,,,,,,,,,,..... |
+| ..............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----+    %                  %%++ %+%@-,,,,,,,,,,,..... |
+| .............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----+#                       #%    ++-,,,,,,,,,,,,.... |
+| ............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,------+                             @---,,,,,,,,,,,,.... |
+| ..........,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-------++%                             ---,,,,,,,,,,,,.... |
+| .........,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,--------+ +                             %+---,,,,,,,,,,,,,... |
+| ........,,,,,,,,,,,,,,,,,,,,,--------------------@                                +----,,,,,,,,,,,,... |
+| .......,,,,,,,,,,,,,,,,,,,,,,- +-----------------+                                 ----,,,,,,,,,,,,... |
+| .......,,,,,,,,,,,,,,,,,,,,,--++------+---------+%                                 +++--,,,,,,,,,,,,.. |
+| ......,,,,,,,,,,,,,,,,,,,,,,--%+-----++---------                                     #+-,,,,,,,,,,,,.. |
+| .....,,,,,,,,,,,,,,,,,,,,,,----#%++--+@ -+-----+%                                     --,,,,,,,,,,,,.. |
+| .....,,,,,,,,,,,,,,,,,,,,,,-----+## ++@ + +----%                                    +--,,,,,,,,,,,,,.. |
+| ....,,,,,,,,,,,,,,,,,,,,,,------+@  @     @@++++#                                   +--,,,,,,,,,,,,,.. |
+| ....,,,,,,,,,,,,,,,,,,,,,-------%           #++%                                      -,,,,,,,,,,,,,.. |
+| ...,,,,,,,,,,,,,,,,,,,,,------++%#           %%@                                     %-,,,,,,,,,,,,,,. |
+| ...,,,,,,,,,,,,,,,,,,,--------+               %                                     +--,,,,,,,,,,,,,,. |
+| ...,,,,,,,,,,,,,,,,,,-----+--++@              #                                      --,,,,,,,,,,,,,,. |
+| ..,,,,,,,,,,,,,,,,,-------%+++%                                                    @--,,,,,,,,,,,,,,,. |
+| ..,,,,,,,,,,,-------------+ @#@                                                    ---,,,,,,,,,,,,,,,. |
+| ..,,,,,,,,,---@--------@-+%                                                       +---,,,,,,,,,,,,,,,. |
+| ..,,,,,------- +-++++-+%%%                                                       +----,,,,,,,,,,,,,,,. |
+| ..,,,,,,------%--------++%                                                       +----,,,,,,,,,,,,,,,. |
+| ..,,,,,,,,,,--+----------++#                                                       ---,,,,,,,,,,,,,,,. |
+| ..,,,,,,,,,,,,------------+@@@%                                                    +--,,,,,,,,,,,,,,,. |
+| ..,,,,,,,,,,,,,,,,,------- +++%                                                    %--,,,,,,,,,,,,,,,. |
+| ...,,,,,,,,,,,,,,,,,,---------+@              @                                      --,,,,,,,,,,,,,,. |
+| ...,,,,,,,,,,,,,,,,,,,,------- #              %@                                    +--,,,,,,,,,,,,,,. |
+| ...,,,,,,,,,,,,,,,,,,,,,-------++@           %+                                      %-,,,,,,,,,,,,,,. |
+| ....,,,,,,,,,,,,,,,,,,,,,-------            %++%                                     %-,,,,,,,,,,,,,.. |
+| ....,,,,,,,,,,,,,,,,,,,,,,------+#  %#   #@ ++++                                    +--,,,,,,,,,,,,,.. |
+| .....,,,,,,,,,,,,,,,,,,,,,,-----+ %%++% +@+----+                                    +--,,,,,,,,,,,,,.. |
+| .....,,,,,,,,,,,,,,,,,,,,,,,---%+++--+#+--------%                                    #--,,,,,,,,,,,,.. |
+| ......,,,,,,,,,,,,,,,,,,,,,,--++-----%%---------                                    @#--,,,,,,,,,,,,.. |
+| .......,,,,,,,,,,,,,,,,,,,,,---------------------+@                                +-++,,,,,,,,,,,,... |
+| ........,,,,,,,,,,,,,,,,,,,,,--------------------+                                 ----,,,,,,,,,,,,... |
+| .........,,,,,,,,,,,,,,,,,,,,----,,,-------------                                #+----,,,,,,,,,,,,... |
+| ..........,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-------+ +                              +---,,,,,,,,,,,,,... |
+| ...........,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,--------+%#                           #---,,,,,,,,,,,,.... |
+| ............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,------+#                        @   @---,,,,,,,,,,,,.... |
+| .............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----+#                        +    @--,,,,,,,,,,,,.... |
+| ..............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---+%   %+@                 %+-+ +++%-,,,,,,,,,,,..... |
+| ................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----% %@++              # %  -----++-,,,,,,,,,,,,..... |
+| .................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-- ++ ---+ + +%@     %++++++------%-,,,,,,,,,,,...... |
+| ...................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---- -------++       +------------,,,,,,,,,,,,...... |
+| ....................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----------+%       +--------,,,,,,,,,,,,,,,....... |
+| ......................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,--------+#        -----,,,,,,,,,,,,,,,,,,....... |
+| .......................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-------+       #----,,,,,,,,,,,,,,,,,,........ |
+| .........................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----+%      %#---,,,,,,,,,,,,,,,,,,,........ |
+| ..........................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---+%+%@  %+%%--,,,,,,,,,,,,,,,,,,......... |
+| ............................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---+-+%  %----,,,,,,,,,,,,,,,,,,.......... |
+| .............................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----+%@+---,,,,,,,,,,,,,,,,,,,.......... |
+| ...............................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----+%----,,,,,,,,,,,,,,,,,,........... |
+| ................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,-----%+ +--,,,,,,,,,,,,,,,,,............ |
+| ..................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---++----,,,,,,,,,,,,,,,,,............. |
+| ...................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,---@-----,,,,,,,,,,,,,,,,,............. |
+| .....................................,,,,,,,,,,,,,,,,,,,,,,,,,,,-----,,,,,,,,,,,,,,,,,,,.............. |
+|  .....................................,,,,,,,,,,,,,,,,,,,,,,,,,,--%,,,,,,,,,,,,,,,,,,,,............... |
+|  .......................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,................. |
+|   ........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.................. |
+|    ........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,................... |
+|     .........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.................... |
+|      ..........................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,...................... |
+|       ............................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,........................ |
+|        .............................................,,,,,,,,,,,,,,,,,,,,,,,,.......................... |
+|         ................................................,,,,,,,,,,,,,,,,,............................. |
+|          .....................................................,,,,.................................... |
+|           ...........................................................................................  |
+|            .........................................................................................   |
+|             ......................................................................................     |
+|              ....................................................................................      |
+|                .................................................................................       |
+|                 ..............................................................................         |
+|                   ...........................................................................          |
+|                    ........................................................................            |
++--------------------------------------------------------------------------------------------------------+
 ```
 
 This command outputs the Mandelbrot set, calculated through SQL.
