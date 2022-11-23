@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgres11:
-    image: postgres:11.5-alpine
+    image: postgres:11.18-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
@@ -11,7 +11,7 @@ services:
     ports:
       - '5432:5432'
   postgres12:
-    image: postgres:12.7-alpine
+    image: postgres:12.13-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
@@ -28,3 +28,21 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - '5434:5432'
+  postgres14:
+    image: postgres:14.6-alpine
+    command: postgres -c shared_preload_libraries=pg_stat_statements
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ecto_psql_extras_test
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5435:5432'
+  postgres15:
+    image: postgres:15.1-alpine
+    command: postgres -c shared_preload_libraries=pg_stat_statements
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ecto_psql_extras_test
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5436:5432'
