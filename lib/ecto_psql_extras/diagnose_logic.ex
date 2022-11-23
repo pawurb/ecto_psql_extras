@@ -6,7 +6,7 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
   require Logger
 
   @table_cache_hit_min_expected 0.985
-  @index_cache_hit_min_expected "0.985"
+  @index_cache_hit_min_expected 0.985
   @unused_indexes_max_scans 20
   @unused_indexes_min_size_bytes 1000000
   @null_indexes_min_size_mb 1 # 1 MB
