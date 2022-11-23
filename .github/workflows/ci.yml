@@ -36,23 +36,39 @@ jobs:
           docker run --env POSTGRES_USER=postgres \
             --env POSTGRES_DB=ecto_psql_extras_test \
             --env POSTGRES_PASSWORD=postgres \
-            -d -p 5432:5432 postgres:11.5-alpine \
+            -d -p 5432:5432 postgres:11.18-alpine \
             postgres -c shared_preload_libraries=pg_stat_statements
-          sleep 2
+          sleep 5
       - name: Run PostgreSQL 12
         run: |
           docker run --env POSTGRES_USER=postgres \
             --env POSTGRES_DB=ecto_psql_extras_test \
             --env POSTGRES_PASSWORD=postgres \
-            -d -p 5433:5432 postgres:12.7-alpine \
+            -d -p 5433:5432 postgres:12.13-alpine \
             postgres -c shared_preload_libraries=pg_stat_statements
-          sleep 2
+          sleep 5
       - name: Run PostgreSQL 13
         run: |
           docker run --env POSTGRES_USER=postgres \
             --env POSTGRES_DB=ecto_psql_extras_test \
             --env POSTGRES_PASSWORD=postgres \
-            -d -p 5434:5432 postgres:13.3-alpine \
+            -d -p 5434:5432 postgres:13.9-alpine \
+            postgres -c shared_preload_libraries=pg_stat_statements
+          sleep 5
+      - name: Run PostgreSQL 14
+        run: |
+          docker run --env POSTGRES_USER=postgres \
+            --env POSTGRES_DB=ecto_psql_extras_test \
+            --env POSTGRES_PASSWORD=postgres \
+            -d -p 5435:5432 postgres:14.6-alpine \
+            postgres -c shared_preload_libraries=pg_stat_statements
+          sleep 5
+      - name: Run PostgreSQL 15
+        run: |
+          docker run --env POSTGRES_USER=postgres \
+            --env POSTGRES_DB=ecto_psql_extras_test \
+            --env POSTGRES_PASSWORD=postgres \
+            -d -p 5436:5432 postgres:15.1-alpine \
             postgres -c shared_preload_libraries=pg_stat_statements
           sleep 5
       - name: Install Dependencies
@@ -83,6 +99,26 @@ jobs:
       - name: Run tests for PG 13
         env:
           PG_VERSION: 13
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ecto_psql_extras_test
+          POSTGRES_PASSWORD: postgres
+        run: |
+          sleep 4 # wait pg
+          mix test --include distribution
+      - name: Run tests for PG 14
+        env:
+          PG_VERSION: 14
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ecto_psql_extras_test
+          POSTGRES_PASSWORD: postgres
+        run: |
+          sleep 4 # wait pg
+          mix test --include distribution
+      - name: Run tests for PG 15
+        env:
+          PG_VERSION: 15
           POSTGRES_HOST: localhost
           POSTGRES_USER: postgres
           POSTGRES_DB: ecto_psql_extras_test

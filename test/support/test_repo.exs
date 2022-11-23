@@ -4,7 +4,9 @@ defmodule EctoPSQLExtras.TestRepo do
   @ports_mapping %{
     "11" => "5432",
     "12" => "5433",
-    "13" => "5434"
+    "13" => "5434",
+    "14" => "5435",
+    "15" => "5436"
   }
 
   def init(type, opts) do
