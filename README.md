@@ -621,7 +621,7 @@ By default tests will use the following database connection URL compatible with 
 Optionally, you can override the following variables:
 
 `POSTGRES_USER`
-`POSTGRES_USER`
+`POSTGRES_PASSWORD`
 `POSTGRES_HOST`
 `POSTGRES_DB`
 
