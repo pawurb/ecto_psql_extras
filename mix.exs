@@ -1,7 +1,7 @@
 defmodule EctoPSQLExtras.Mixfile do
   use Mix.Project
   @github_url "https://github.com/pawurb/ecto_psql_extras"
-  @version "0.7.6"
+  @version "0.7.8"
 
   def project do
     [
