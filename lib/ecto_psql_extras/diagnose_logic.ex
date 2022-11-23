@@ -3,6 +3,8 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
   Diagnose report logic
   """
 
+  require Logger
+
   @table_cache_hit_min_expected 0.985
   @index_cache_hit_min_expected "0.985"
   @unused_indexes_max_scans 20
@@ -27,12 +29,15 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
           ssl_used(repo),
         ]
       }
-    rescue
-      _ ->
+    catch
+      kind, error ->
+        stacktrace = System.stacktrace()
+        Logger.warn("#{__MODULE__}\n#{Exception.format(kind, error, stacktrace)}")
+
         %{
           columns: ["ok", "check_name", "message"],
           rows: [
-            [false, "diagnose_error", "There was an error when generating your diagnose report"]
+            [false, "diagnose_error", "There was an error when generating your diagnose report, see logs"]
           ]
         }
     end
@@ -109,10 +114,10 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       args: [min_relation_size_mb: @null_indexes_min_size_mb]
     ).rows
     |> Enum.filter(fn(el) ->
-      null_frac = Enum.at(el, 4)
+      {null_frac, ""} = Enum.at(el, 5)
       |> String.replace("%", "")
+      |> String.trim_leading
       |> Float.parse
-      |> elem(0)
       null_frac > @null_min_null_frac_percent
     end)
 
