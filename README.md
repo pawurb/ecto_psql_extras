@@ -611,7 +611,9 @@ cp docker-compose.yml.sample docker-compose.yml
 docker compose up -d
 PG_VERSION=11 mix test --include distribution \
   && PG_VERSION=12 mix test --include distribution \
-  && PG_VERSION=13 mix test --include distribution
+  && PG_VERSION=13 mix test --include distribution \
+  && PG_VERSION=14 mix test --include distribution \
+  && PG_VERSION=15 mix test --include distribution
 ```
 
 By default tests will use the following database connection URL compatible with the default `docker-compose.yml`:
