@@ -24,7 +24,7 @@ defmodule EctoPSQLExtras.TestRepo do
       user = System.get_env("POSTGRES_USER") || "postgres"
       password = System.get_env("POSTGRES_USER") || "postgres"
       host = System.get_env("POSTGRES_HOST") || "localhost"
-      db_name = System.get_env("POSTGRES_DB") || "ecto_psql_extras"
+      db_name = System.get_env("POSTGRES_DB") || "ecto_psql_extras_test"
 
       port = Map.get(@ports_mapping, System.get_env("PG_VERSION"), "5432")
 
