@@ -1,6 +1,8 @@
 defmodule DiagnoseLogicTest do
   use ExUnit.Case, async: false
   alias EctoPSQLExtras.TestRepo
+
+  import ExUnit.CaptureIO
   import Mock
 
   setup do
@@ -35,7 +37,8 @@ defmodule DiagnoseLogicTest do
         rows: [
           ["123", "index_plans_on_payer_id", "16 MB", true, "payer_id", " 0.00%", "0 kb"],
           ["321", "index_feedbacks_on_target_id", "80 kB", false, "target_id", "97.00%", "77 kb"],
-          ["231", "index_channels_on_slack_id", "56 MB", true, "slack_id", "49.99%", "28 MB"]
+          ["231", "index_channels_on_slack_id", "56 MB", true, "slack_id", "49.99%", "28 MB"],
+          [465344, "index_on_line_item_id_index", "1424 kB", true, "line_item_id", "    .07%", "972 bytes"]
         ]
       }
     end,
@@ -90,7 +93,9 @@ defmodule DiagnoseLogicTest do
       }
     end
   ] do
-    EctoPSQLExtras.diagnose(EctoPSQLExtras.TestRepo)
+    capture_io(fn ->
+      EctoPSQLExtras.diagnose(EctoPSQLExtras.TestRepo)
+    end)
 
     result = EctoPSQLExtras.DiagnoseLogic.run(EctoPSQLExtras.TestRepo)
 
@@ -98,6 +103,7 @@ defmodule DiagnoseLogicTest do
     assert Enum.at(Enum.at(result.rows, 0), 1) == "table_cache_hit"
   end
 
+  @tag capture_log: true
   test_with_mock "rescues random database errors", EctoPSQLExtras, [:passthrough], [
     unused_indexes: fn(_repo, _opts) ->
       raise "random error"

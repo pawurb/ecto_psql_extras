@@ -401,7 +401,7 @@ defmodule EctoPSQLExtras do
   def format_value({nil, _}), do: ""
   def format_value({number, :percent}), do: format_percent(number)
   def format_value({integer, :bytes}) when is_integer(integer), do: format_bytes(integer)
-  def format_value({string, :string}), do: String.replace(string, "\n", "")
+  def format_value({string, :string}) when is_binary(string), do: String.replace(string, "\n", "")
   def format_value({binary, _}) when is_binary(binary), do: binary
   def format_value({other, _}), do: inspect(other)
 
