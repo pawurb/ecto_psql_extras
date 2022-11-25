@@ -1,6 +1,8 @@
 defmodule DiagnoseLogicTest do
   use ExUnit.Case, async: false
   alias EctoPSQLExtras.TestRepo
+
+  import ExUnit.CaptureIO
   import Mock
 
   setup do
@@ -91,7 +93,9 @@ defmodule DiagnoseLogicTest do
       }
     end
   ] do
-    EctoPSQLExtras.diagnose(EctoPSQLExtras.TestRepo)
+    capture_io(fn ->
+      EctoPSQLExtras.diagnose(EctoPSQLExtras.TestRepo)
+    end)
 
     result = EctoPSQLExtras.DiagnoseLogic.run(EctoPSQLExtras.TestRepo)
 
@@ -99,6 +103,7 @@ defmodule DiagnoseLogicTest do
     assert Enum.at(Enum.at(result.rows, 0), 1) == "table_cache_hit"
   end
 
+  @tag capture_log: true
   test_with_mock "rescues random database errors", EctoPSQLExtras, [:passthrough], [
     unused_indexes: fn(_repo, _opts) ->
       raise "random error"
