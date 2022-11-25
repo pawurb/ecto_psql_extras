@@ -35,7 +35,8 @@ defmodule DiagnoseLogicTest do
         rows: [
           ["123", "index_plans_on_payer_id", "16 MB", true, "payer_id", " 0.00%", "0 kb"],
           ["321", "index_feedbacks_on_target_id", "80 kB", false, "target_id", "97.00%", "77 kb"],
-          ["231", "index_channels_on_slack_id", "56 MB", true, "slack_id", "49.99%", "28 MB"]
+          ["231", "index_channels_on_slack_id", "56 MB", true, "slack_id", "49.99%", "28 MB"],
+          [465344, "index_on_line_item_id_index", "1424 kB", true, "line_item_id", "    .07%", "972 bytes"]
         ]
       }
     end,
