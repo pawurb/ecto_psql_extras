@@ -126,12 +126,12 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Install postgrex 0.16 (except on elixir 1.7.4)
+      - name: Install postgrex 0.17 (except on elixir 1.7.4)
         if: matrix.pair.elixir != '1.7.4'
         run: |
           mix deps.unlock --all
           mix deps.update postgrex
-      - name: Run tests for PG 11/postgrex 0.16 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 11/postgrex 0.17 (0.15 on elixir 1.7.4)
         env:
           PG_VERSION: 11
           POSTGRES_HOST: localhost
@@ -141,7 +141,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 12/postgrex 0.16 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 12/postgrex 0.17 (0.15 on elixir 1.7.4)
         env:
           PG_VERSION: 12
           POSTGRES_HOST: localhost
@@ -151,7 +151,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 13/postgrex 0.16 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 13/postgrex 0.17 (0.15 on elixir 1.7.4)
         env:
           PG_VERSION: 13
           POSTGRES_HOST: localhost
@@ -161,7 +161,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 14/postgrex 0.16 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 14/postgrex 0.17 (0.15 on elixir 1.7.4)
         env:
           PG_VERSION: 14
           POSTGRES_HOST: localhost
@@ -171,7 +171,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 15/postgrex 0.16 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 15/postgrex 0.17 (0.15 on elixir 1.7.4)
         env:
           PG_VERSION: 15
           POSTGRES_HOST: localhost
