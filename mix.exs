@@ -7,7 +7,7 @@ defmodule EctoPSQLExtras.Mixfile do
     [
       app: :ecto_psql_extras,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
       escript: [main_module: EctoPSQLExtras],
       description: description(),
