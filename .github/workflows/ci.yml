@@ -15,14 +15,17 @@ jobs:
       matrix:
         include:
           - pair:
-              elixir: 1.14.1
-              otp: 25.1.2
+              elixir: 1.15
+              otp: 26
           - pair:
-              elixir: 1.12.3
-              otp: 24.0.6
+              elixir: 1.14
+              otp: 25
           - pair:
-              elixir: 1.11.4
-              otp: 21.3.8.24
+              elixir: 1.12
+              otp: 24
+          - pair:
+              elixir: 1.11
+              otp: 21
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
