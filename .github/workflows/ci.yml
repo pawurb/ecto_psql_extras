@@ -9,20 +9,23 @@ on:
 jobs:
   mix_test:
     name: mix test (Elixir ${{matrix.pair.elixir}} | Erlang/OTP ${{matrix.pair.otp}})
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
           - pair:
-              elixir: 1.14.1
-              otp: 25.1.2
+              elixir: 1.15
+              otp: 26
           - pair:
-              elixir: 1.12.3
-              otp: 24.0.6
+              elixir: 1.14
+              otp: 25
           - pair:
-              elixir: 1.7.4
-              otp: 19.3.6
+              elixir: 1.12
+              otp: 24
+          - pair:
+              elixir: 1.11
+              otp: 24
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
@@ -126,12 +129,11 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Install postgrex 0.17 (except on elixir 1.7.4)
-        if: matrix.pair.elixir != '1.7.4'
+      - name: Install latest compatible postgrex
         run: |
           mix deps.unlock --all
           mix deps.update postgrex
-      - name: Run tests for PG 11/postgrex 0.17 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 11/latest compatible postgrex
         env:
           PG_VERSION: 11
           POSTGRES_HOST: localhost
@@ -141,7 +143,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 12/postgrex 0.17 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 12/latest compatible postgrex
         env:
           PG_VERSION: 12
           POSTGRES_HOST: localhost
@@ -151,7 +153,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 13/postgrex 0.17 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 13/latest compatible postgrex
         env:
           PG_VERSION: 13
           POSTGRES_HOST: localhost
@@ -161,7 +163,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 14/postgrex 0.17 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 14/latest compatible postgrex
         env:
           PG_VERSION: 14
           POSTGRES_HOST: localhost
@@ -171,7 +173,7 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-      - name: Run tests for PG 15/postgrex 0.17 (0.15 on elixir 1.7.4)
+      - name: Run tests for PG 15/latest compatible postgrex
         env:
           PG_VERSION: 15
           POSTGRES_HOST: localhost

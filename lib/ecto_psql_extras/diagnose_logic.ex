@@ -31,7 +31,7 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       }
     catch
       kind, error ->
-        Logger.warn("#{__MODULE__}\n#{Exception.format(kind, error, __STACKTRACE__)}")
+        Logger.warning("#{__MODULE__}\n#{Exception.format(kind, error, __STACKTRACE__)}")
 
         %{
           columns: ["ok", "check_name", "message"],

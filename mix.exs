@@ -7,7 +7,7 @@ defmodule EctoPSQLExtras.Mixfile do
     [
       app: :ecto_psql_extras,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
       escript: [main_module: EctoPSQLExtras],
       description: description(),
@@ -20,8 +20,8 @@ defmodule EctoPSQLExtras.Mixfile do
   def deps do
     [
       {:table_rex, "~> 3.1.1"},
-      {:ecto_sql, "~> 3.4"},
-      {:postgrex, "~> 0.15.7 or ~> 0.16.0 or ~> 0.17.0"},
+      {:ecto_sql, "~> 3.7"},
+      {:postgrex, "~> 0.16.0 or ~> 0.17.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:mock, "~> 0.3.0", only: :test}
     ]
