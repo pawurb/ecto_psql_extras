@@ -9,7 +9,6 @@ defmodule EctoPSQLExtras.Mixfile do
       version: @version,
       elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
-      escript: [main_module: EctoPSQLExtras],
       description: description(),
       deps: deps(),
       package: package(),
