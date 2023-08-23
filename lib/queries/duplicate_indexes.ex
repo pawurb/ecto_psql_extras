@@ -20,8 +20,8 @@ defmodule EctoPSQLExtras.DuplicateIndexes do
     /* ECTO_PSQL_EXTRAS: Multiple indexes that have the same set of columns, same opclass, expression and predicate */
 
     SELECT pg_size_pretty(sum(pg_relation_size(idx))::bigint) as size,
-       (array_agg(idx))[1] as idx1, (array_agg(idx))[2] as idx2,
-       (array_agg(idx))[3] as idx3, (array_agg(idx))[4] as idx4
+       (array_agg(idx))[1]::text as idx1, (array_agg(idx))[2]::text as idx2,
+       (array_agg(idx))[3]::text as idx3, (array_agg(idx))[4]::text as idx4
     FROM (
         SELECT indexrelid::regclass as idx, (indrelid::text ||E'\n'|| indclass::text ||E'\n'|| indkey::text ||E'\n'||
         coalesce(indexprs::text,'')||E'\n' || coalesce(indpred::text,'')) as key
