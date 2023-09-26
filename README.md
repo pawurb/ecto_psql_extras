@@ -1,4 +1,4 @@
-# Ecto PSQL Extras [![Hex.pm](https://img.shields.io/hexpm/v/ecto_psql_extras.svg)](https://hex.pm/packages/ecto_psql_extras) [![Hex.pm](https://img.shields.io/hexpm/dt/ecto_psql_extras.svg)](https://hex.pm/packages/ecto_psql_extras) [![Hex.pm](https://img.shields.io/hexpm/l/ecto_psql_extras.svg)](https://github.com/pawurb/ecto_psql_extras/blob/master/LICENSE) [![CI](https://github.com/pawurb/ecto_psql_extras/workflows/CI/badge.svg)](https://github.com/pawurb/ecto_psql_extras/actions)
+# Ecto PSQL Extras [![Hex.pm](https://img.shields.io/hexpm/v/ecto_psql_extras.svg)](https://hex.pm/packages/ecto_psql_extras) [![Hex.pm](https://img.shields.io/hexpm/dt/ecto_psql_extras.svg)](https://hex.pm/packages/ecto_psql_extras) [![Hex.pm](https://img.shields.io/hexpm/l/ecto_psql_extras.svg)](https://github.com/pawurb/ecto_psql_extras/blob/main/LICENSE) [![CI](https://github.com/pawurb/ecto_psql_extras/workflows/CI/badge.svg)](https://github.com/pawurb/ecto_psql_extras/actions)
 
 Elixir port of [Heroku PG Extras](https://github.com/heroku/heroku-pg-extras). The goal of this project is to provide powerful insights into the PostgreSQL database for Elixir apps that are not using the Heroku PostgreSQL plugin.
 
@@ -8,7 +8,7 @@ You can check out this blog post for detailed step by step tutorial on how to [o
 
 This library is an optional dependency of [Phoenix.LiveDashboard](https://hexdocs.pm/phoenix_live_dashboard/Phoenix.LiveDashboard.html). Check it out if you want to see SQL metrics in the UI instead of a command line interface.
 
-![Phoenix Ecto Dashboard](https://github.com/pawurb/ecto_psql_extras/raw/master/phoenix-dashboard-diagnose.png)
+![Phoenix Ecto Dashboard](https://github.com/pawurb/ecto_psql_extras/raw/main/phoenix-dashboard-diagnose.png)
 
 Alternative versions:
 
@@ -102,7 +102,7 @@ The simplest way to start using `ecto_psql_extras` is to execute a `diagnose` me
 EctoPSQLExtras.diagnose(YourApp.Repo)
 ```
 
-![Diagnose report](https://github.com/pawurb/ecto_psql_extras/raw/master/ecto_stats_diagnose.png)
+![Diagnose report](https://github.com/pawurb/ecto_psql_extras/raw/main/ecto_stats_diagnose.png)
 
 Keep reading to learn about methods that `diagnose` uses under the hood.
 
