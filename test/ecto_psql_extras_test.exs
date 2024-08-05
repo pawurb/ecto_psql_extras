@@ -136,7 +136,7 @@ defmodule EctoPSQLExtrasTest do
       assert(length(
         EctoPSQLExtras.long_running_queries(
           TestRepo,
-          [format: :raw, args: [threshold: '1 second']]
+          [format: :raw, args: [threshold: ~c"1 second"]]
         ).columns
       ) > 0)
 
@@ -144,7 +144,7 @@ defmodule EctoPSQLExtrasTest do
         EctoPSQLExtras.query(
           :long_running_queries,
           TestRepo,
-          [format: :raw, args: [threshold: '200 milliseconds']]
+          [format: :raw, args: [threshold: ~c"200 milliseconds"]]
         ).columns
       ) > 0)
     end
@@ -214,12 +214,12 @@ defmodule EctoPSQLExtrasTest do
 
       assert EctoPSQLExtras.long_running_queries({Dummy.Repo, node_name},
                format: :raw,
-               args: [threshold: '1 second']
+               args: [threshold: ~c"1 second"]
              ).columns != []
 
       assert EctoPSQLExtras.query(:long_running_queries, {Dummy.Repo, node_name},
                format: :raw,
-               args: [threshold: '200 milliseconds']
+               args: [threshold: ~c"200 milliseconds"]
              ).columns != []
     end
 
@@ -230,7 +230,7 @@ defmodule EctoPSQLExtrasTest do
       assert_raise RuntimeError, "repository is not defined on remote node", fn ->
         EctoPSQLExtras.long_running_queries({Dummy.InvalidRepo, node_name},
           format: :raw,
-          args: [threshold: '1 second']
+          args: [threshold: ~c"1 second"]
         )
       end
     end
@@ -243,7 +243,7 @@ defmodule EctoPSQLExtrasTest do
                    fn ->
                      EctoPSQLExtras.long_running_queries({Dummy.Repo, node_name},
                        format: :raw,
-                       args: [threshold: '1 second']
+                       args: [threshold: ~c"1 second"]
                      )
                    end
     end
