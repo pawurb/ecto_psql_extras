@@ -1,48 +1,56 @@
-version: '3'
-
 services:
-  postgres11:
-    image: postgres:11.18-alpine
+  postgres12:
+    image: postgres:12.20-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: ecto_psql_extras_test
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecto-psql-extras-test
+      POSTGRES_PASSWORD: secret
     ports:
       - '5432:5432'
-  postgres12:
-    image: postgres:12.13-alpine
+  postgres13:
+    image: postgres:13.16-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: ecto_psql_extras_test
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecto-psql-extras-test
+      POSTGRES_PASSWORD: secret
     ports:
       - '5433:5432'
-  postgres13:
-    image: postgres:13.3-alpine
+  postgres14:
+    image: postgres:14.13-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: ecto_psql_extras_test
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecto-psql-extras-test
+      POSTGRES_PASSWORD: secret
     ports:
       - '5434:5432'
-  postgres14:
-    image: postgres:14.6-alpine
+  postgres15:
+    image: postgres:15.8-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: ecto_psql_extras_test
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecto-psql-extras-test
+      POSTGRES_PASSWORD: secret
     ports:
       - '5435:5432'
-  postgres15:
-    image: postgres:15.1-alpine
+  postgres16:
+    image: postgres:16.4-alpine
     command: postgres -c shared_preload_libraries=pg_stat_statements
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: ecto_psql_extras_test
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecto-psql-extras-test
+      POSTGRES_PASSWORD: secret
     ports:
       - '5436:5432'
+  postgres17:
+    image: postgres:17.0-alpine
+    command: postgres -c shared_preload_libraries=pg_stat_statements
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ecto-psql-extras-test
+      POSTGRES_PASSWORD: secret
+    ports:
+      - '5437:5432'
+

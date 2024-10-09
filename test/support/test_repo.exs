@@ -2,11 +2,12 @@ defmodule EctoPSQLExtras.TestRepo do
   use Ecto.Repo, otp_app: :ecto_psql_extras, adapter: Ecto.Adapters.Postgres
 
   @ports_mapping %{
-    "11" => "5432",
-    "12" => "5433",
-    "13" => "5434",
-    "14" => "5435",
-    "15" => "5436"
+    "12" => "5432",
+    "13" => "5433",
+    "14" => "5434",
+    "15" => "5435",
+    "16" => "5436",
+    "17" => "5437"
   }
 
   def init(type, opts) do
@@ -22,9 +23,9 @@ defmodule EctoPSQLExtras.TestRepo do
       postgres_url
     else
       user = System.get_env("POSTGRES_USER") || "postgres"
-      password = System.get_env("POSTGRES_USER") || "postgres"
+      password = System.get_env("POSTGRES_USER") || "secret"
       host = System.get_env("POSTGRES_HOST") || "localhost"
-      db_name = System.get_env("POSTGRES_DB") || "ecto_psql_extras_test"
+      db_name = System.get_env("POSTGRES_DB") || "ecto-psql-extras-test"
 
       port = Map.get(@ports_mapping, System.get_env("PG_VERSION"), "5432")
 

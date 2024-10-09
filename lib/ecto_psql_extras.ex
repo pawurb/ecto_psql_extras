@@ -67,6 +67,9 @@ defmodule EctoPSQLExtras do
       vsn when vsn < {1, 8, 0} ->
         %{calls: EctoPSQLExtras.CallsLegacy, outliers: EctoPSQLExtras.OutliersLegacy}
 
+      vsn when vsn >= {1, 11, 0} ->
+        %{calls: EctoPSQLExtras.Calls17, outliers: EctoPSQLExtras.Outliers17}
+
       _vsn ->
         %{calls: EctoPSQLExtras.Calls, outliers: EctoPSQLExtras.Outliers}
     end
@@ -133,11 +136,12 @@ defmodule EctoPSQLExtras do
     query_module = Map.fetch!(queries(repo), name)
     opts = prepare_opts(opts, query_module.info[:default_args])
 
-    result = query!(
-      repo,
-      query_module.query(Keyword.fetch!(opts, :args)),
-      Keyword.get(opts, :query_opts, @default_query_opts)
-    )
+    result =
+      query!(
+        repo,
+        query_module.query(Keyword.fetch!(opts, :args)),
+        Keyword.get(opts, :query_opts, @default_query_opts)
+      )
 
     format(
       Keyword.fetch!(opts, :format),
@@ -432,15 +436,21 @@ defmodule EctoPSQLExtras do
   defp memory_unit(:KB), do: 1024
 
   defp prepare_opts(format, default_args) when is_atom(format) do
-    IO.warn "This API is deprecated. Please pass format value as a keyword list: `format: :raw`",
-            Macro.Env.stacktrace(__ENV__)
+    IO.warn(
+      "This API is deprecated. Please pass format value as a keyword list: `format: :raw`",
+      Macro.Env.stacktrace(__ENV__)
+    )
+
     prepare_opts([format: format], default_args)
   end
 
   defp prepare_opts(opts, default_args) do
-    Keyword.merge([
-      format: Keyword.get(opts, :format, :ascii),
-      args: Keyword.merge(default_args || [], opts[:args] || [])
-    ], opts)
+    Keyword.merge(
+      [
+        format: Keyword.get(opts, :format, :ascii),
+        args: Keyword.merge(default_args || [], opts[:args] || [])
+      ],
+      opts
+    )
   end
 end

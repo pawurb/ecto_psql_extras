@@ -36,7 +36,7 @@ defmodule EctoPSQLExtrasTest do
   end
 
   defmodule Repo do
-    def query!(_, _, _), do: %{rows: Process.get(Repo) || raise "no query result"}
+    def query!(_, _, _), do: %{rows: Process.get(Repo) || raise("no query result")}
   end
 
   describe "pg_stat_statements queries" do
@@ -65,16 +65,18 @@ defmodule EctoPSQLExtrasTest do
       assert {:outliers, EctoPSQLExtras.OutliersLegacy} in queries
     end
 
-    test "includes recent queries on later versions" do
+    test "includes standard queries" do
       Process.put(Repo, [["1.9.0"]])
       queries = queries(Repo)
       assert {:calls, EctoPSQLExtras.Calls} in queries
       assert {:outliers, EctoPSQLExtras.Outliers} in queries
+    end
 
+    test "includes recent queries on newest pg versions" do
       Process.put(Repo, [["2.1.0"]])
       queries = queries(Repo)
-      assert {:calls, EctoPSQLExtras.Calls} in queries
-      assert {:outliers, EctoPSQLExtras.Outliers} in queries
+      assert {:calls, EctoPSQLExtras.Calls17} in queries
+      assert {:outliers, EctoPSQLExtras.Outliers17} in queries
     end
   end
 
@@ -109,78 +111,101 @@ defmodule EctoPSQLExtrasTest do
   describe "database interaction" do
     setup do
       start_supervised!(EctoPSQLExtras.TestRepo)
-      EctoPSQLExtras.TestRepo.query!("CREATE EXTENSION IF NOT EXISTS pg_stat_statements;", [], log: false)
+
+      EctoPSQLExtras.TestRepo.query!("CREATE EXTENSION IF NOT EXISTS pg_stat_statements;", [],
+        log: false
+      )
+
       :ok
     end
 
     test "run queries by param" do
-      for query <- Enum.reduce((queries(TestRepo) |> Map.to_list), [], fn(el, acc) ->
-        case elem(el, 0) in @skip_queries do
-          true ->
-            acc
-          false ->
-            [elem(el, 0) | acc]
-        end
-      end) do
-        assert(length(
-          EctoPSQLExtras.query(
-            query,
-            TestRepo,
-            [format: :raw]
-          ).columns
-        ) > 0)
+      for query <-
+            Enum.reduce(queries(TestRepo) |> Map.to_list(), [], fn el, acc ->
+              case elem(el, 0) in @skip_queries do
+                true ->
+                  acc
+
+                false ->
+                  [elem(el, 0) | acc]
+              end
+            end) do
+        assert(
+          length(
+            EctoPSQLExtras.query(
+              query,
+              TestRepo,
+              format: :raw
+            ).columns
+          ) > 0
+        )
       end
     end
 
     test "provide custom param" do
-      assert(length(
-        EctoPSQLExtras.long_running_queries(
-          TestRepo,
-          [format: :raw, args: [threshold: ~c"1 second"]]
-        ).columns
-      ) > 0)
+      assert(
+        length(
+          EctoPSQLExtras.long_running_queries(
+            TestRepo,
+            format: :raw,
+            args: [threshold: ~c"1 second"]
+          ).columns
+        ) > 0
+      )
 
-      assert(length(
-        EctoPSQLExtras.query(
-          :long_running_queries,
-          TestRepo,
-          [format: :raw, args: [threshold: ~c"200 milliseconds"]]
-        ).columns
-      ) > 0)
+      assert(
+        length(
+          EctoPSQLExtras.query(
+            :long_running_queries,
+            TestRepo,
+            format: :raw,
+            args: [threshold: ~c"200 milliseconds"]
+          ).columns
+        ) > 0
+      )
     end
 
     test "test legacy API" do
-      warning = capture_io(:stderr, fn ->
-        columns = EctoPSQLExtras.long_running_queries(TestRepo, :raw).columns
-        assert length(columns)  > 0
-      end)
+      warning =
+        capture_io(:stderr, fn ->
+          columns = EctoPSQLExtras.long_running_queries(TestRepo, :raw).columns
+          assert length(columns) > 0
+        end)
 
-      assert warning =~ "This API is deprecated. Please pass format value as a keyword list: `format: :raw`"
+      assert warning =~
+               "This API is deprecated. Please pass format value as a keyword list: `format: :raw`"
     end
 
     test "test query_opts allows for logging" do
-      logs = capture_log(fn ->
-        EctoPSQLExtras.long_running_queries(TestRepo, format: :raw, query_opts: [log: true])
-      end)
-      assert logs =~ "ECTO_PSQL_EXTRAS: All queries longer than the threshold by descending duration"
+      logs =
+        capture_log(fn ->
+          EctoPSQLExtras.long_running_queries(TestRepo, format: :raw, query_opts: [log: true])
+        end)
+
+      assert logs =~
+               "ECTO_PSQL_EXTRAS: All queries longer than the threshold by descending duration"
     end
 
     test "run queries by method" do
-      for query <- Enum.reduce((queries(TestRepo) |> Map.to_list), [], fn(el, acc) ->
-        case elem(el, 0) in @skip_queries do
-          true ->
-            acc
-          false ->
-            [elem(el, 0) | acc]
-        end
-      end) do
-        assert(length(
-          apply(
-            EctoPSQLExtras,
-            query,
-            [TestRepo, [format: :raw]]
-          ).columns
-        ) > 0)
+      for query <-
+            Enum.reduce(queries(TestRepo) |> Map.to_list(), [], fn el, acc ->
+              case elem(el, 0) in @skip_queries do
+                true ->
+                  acc
+
+                false ->
+                  [elem(el, 0) | acc]
+              end
+            end) do
+        assert(
+          length(
+            apply(
+              EctoPSQLExtras,
+              query,
+              [TestRepo, [format: :raw]]
+            ).columns
+          ) > 0
+        )
       end
     end
   end
