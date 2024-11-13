@@ -123,18 +123,18 @@ defmodule EctoPSQLExtras do
     query_module = Map.fetch!(queries(repo), :diagnose)
     result = EctoPSQLExtras.DiagnoseLogic.run(repo)
 
-    opts = prepare_opts(opts, query_module.info[:default_args])
+    opts = prepare_opts(opts, query_module.info()[:default_args])
 
     format(
       Keyword.fetch!(opts, :format),
-      query_module.info,
+      query_module.info(),
       result
     )
   end
 
   def query(name, repo, opts) do
     query_module = Map.fetch!(queries(repo), name)
-    opts = prepare_opts(opts, query_module.info[:default_args])
+    opts = prepare_opts(opts, query_module.info()[:default_args])
 
     result =
       query!(
@@ -145,7 +145,7 @@ defmodule EctoPSQLExtras do
 
     format(
       Keyword.fetch!(opts, :format),
-      query_module.info,
+      query_module.info(),
       result
     )
   end
