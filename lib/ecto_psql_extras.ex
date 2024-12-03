@@ -399,7 +399,7 @@ defmodule EctoPSQLExtras do
   end
 
   @doc false
-  def format_value({%struct{} = value, _}) when struct in [Decimal, Postgrex.Interval],
+  def format_value({%struct{} = value, _}) when struct in [Decimal, Duration, Postgrex.Interval],
     do: struct.to_string(value)
 
   def format_value({nil, _}), do: ""
