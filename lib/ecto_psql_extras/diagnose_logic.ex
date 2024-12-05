@@ -141,7 +141,9 @@ defmodule EctoPSQLExtras.DiagnoseLogic do
       format: :raw
     ).rows
     |> Enum.filter(fn(el) ->
-      Enum.at(el, 3) > Decimal.from_float(@bloat_min_value)
+      # el = [type, schemaname, object_name, bloat, waste]
+      bloat = Decimal.to_float(Enum.at(el, 3)) |> Float.round(6)
+      bloat > @bloat_min_value
     end)
 
     [ok, message] = case bloated_objects do
