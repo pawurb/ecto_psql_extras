@@ -15,6 +15,9 @@ jobs:
       matrix:
         include:
           - pair:
+              elixir: 1.18
+              otp: 27
+          - pair:
               elixir: 1.17
               otp: 27
           - pair:
@@ -167,4 +170,3 @@ jobs:
         run: |
           sleep 4 # wait pg
           mix test --include distribution
-
