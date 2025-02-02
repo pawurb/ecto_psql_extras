@@ -23,7 +23,7 @@ defmodule EctoPSQLExtras.TestRepo do
       postgres_url
     else
       user = System.get_env("POSTGRES_USER") || "postgres"
-      password = System.get_env("POSTGRES_USER") || "secret"
+      password = System.get_env("POSTGRES_PASSWORD") || "secret"
       host = System.get_env("POSTGRES_HOST") || "localhost"
       db_name = System.get_env("POSTGRES_DB") || "ecto-psql-extras-test"
 
