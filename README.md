@@ -8,7 +8,7 @@ You can check out this blog post for detailed step by step tutorial on how to [o
 
 This library is an optional dependency of [Phoenix.LiveDashboard](https://hexdocs.pm/phoenix_live_dashboard/Phoenix.LiveDashboard.html). Check it out if you want to see SQL metrics in the UI instead of a command line interface.
 
-![Phoenix Ecto Dashboard](https://github.com/pawurb/ecto_psql_extras/raw/main/phoenix-dashboard-diagnose.png)
+![Phoenix Ecto Dashboard](https://github.com/pawurb/ecto_psql_extras/raw/main/phoenix-dashboard-diagnose2.png)
 
 Alternative versions:
 
