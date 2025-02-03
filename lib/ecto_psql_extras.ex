@@ -26,6 +26,8 @@ defmodule EctoPSQLExtras do
   def queries(repo \\ nil) do
     %{
       diagnose: EctoPSQLExtras.Diagnose,
+      missing_fk_indexes: EctoPSQLExtras.MissingFkIndexes,
+      missing_fk_constraints: EctoPSQLExtras.MissingFkConstraints,
       bloat: EctoPSQLExtras.Bloat,
       blocking: EctoPSQLExtras.Blocking,
       cache_hit: EctoPSQLExtras.CacheHit,
@@ -35,6 +37,7 @@ defmodule EctoPSQLExtras do
       index_cache_hit: EctoPSQLExtras.IndexCacheHit,
       index_size: EctoPSQLExtras.IndexSize,
       index_usage: EctoPSQLExtras.IndexUsage,
+      indexes: EctoPSQLExtras.Indexes,
       locks: EctoPSQLExtras.Locks,
       all_locks: EctoPSQLExtras.AllLocks,
       long_running_queries: EctoPSQLExtras.LongRunningQueries,
@@ -50,7 +53,9 @@ defmodule EctoPSQLExtras do
       null_indexes: EctoPSQLExtras.NullIndexes,
       vacuum_stats: EctoPSQLExtras.VacuumStats,
       kill_all: EctoPSQLExtras.KillAll,
-      connections: EctoPSQLExtras.Connections
+      connections: EctoPSQLExtras.Connections,
+      table_schema: EctoPSQLExtras.TableSchema,
+      table_foreign_keys: EctoPSQLExtras.TableForeignKeys
     }
     |> Map.merge(pg_stat_statements_queries(repo))
     |> Map.merge(ssl_used_query(repo))
@@ -132,6 +137,33 @@ defmodule EctoPSQLExtras do
     )
   end
 
+  def query(:missing_fk_indexes, repo, opts) do
+    query_module = Map.fetch!(queries(repo), :missing_fk_indexes)
+
+    opts = prepare_opts(opts, query_module.info()[:default_args])
+
+    result = EctoPSQLExtras.MissingFkIndexesLogic.run(repo, opts[:args][:table_name])
+
+    format(
+      Keyword.fetch!(opts, :format),
+      query_module.info(),
+      result
+    )
+  end
+
+  def query(:missing_fk_constraints, repo, opts) do
+    query_module = Map.fetch!(queries(repo), :missing_fk_constraints)
+    result = EctoPSQLExtras.MissingFkConstraintsLogic.run(repo, opts[:args][:table_name])
+
+    opts = prepare_opts(opts, query_module.info()[:default_args])
+
+    format(
+      Keyword.fetch!(opts, :format),
+      query_module.info(),
+      result
+    )
+  end
+
   def query(name, repo, opts) do
     query_module = Map.fetch!(queries(repo), name)
     opts = prepare_opts(opts, query_module.info()[:default_args])
@@ -203,6 +235,20 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def diagnose(repo, opts \\ []), do: query(:diagnose, repo, opts)
+
+  @doc """
+  Run `missing_fk_indexes` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def missing_fk_indexes(repo, opts \\ []), do: query(:missing_fk_indexes, repo, opts)
+
+  @doc """
+  Run `missing_fk_constraints` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def missing_fk_constraints(repo, opts \\ []), do: query(:missing_fk_constraints, repo, opts)
 
   @doc """
   Run `extensions` query on `repo`, in the given `format`.
@@ -331,6 +377,13 @@ defmodule EctoPSQLExtras do
   def null_indexes(repo, opts \\ []), do: query(:null_indexes, repo, opts)
 
   @doc """
+  Run `indexes` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def indexes(repo, opts \\ []), do: query(:indexes, repo, opts)
+
+  @doc """
   Run `vacuum_stats` query on `repo`, in the given `format`.
 
   `format` is either `:ascii` or `:raw`
@@ -371,6 +424,22 @@ defmodule EctoPSQLExtras do
   `format` is either `:ascii` or `:raw`
   """
   def connections(repo, opts \\ []), do: query(:connections, repo, opts)
+
+  @doc """
+  Run `table_schema` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def table_schema(repo, opts \\ []),
+    do: query(:table_schema, repo, opts)
+
+  @doc """
+  Run `table_foreign_keys` query on `repo`, in the given `format`.
+
+  `format` is either `:ascii` or `:raw`
+  """
+  def table_foreign_keys(repo, opts \\ []),
+    do: query(:table_foreign_keys, repo, opts)
 
   defp format(:ascii, info, result) do
     names = Enum.map(info.columns, & &1.name)
