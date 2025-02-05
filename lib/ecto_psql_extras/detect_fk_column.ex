@@ -26,7 +26,7 @@ defmodule EctoPSQLExtras.DetectFkColumn do
     "zombie" => "zombies"
   }
 
-  @uncountable ~w(equipment information rice money species series fish sheep jeans police)
+  @uncountable ~w(equipment information rice money species series fish sheep jeans police staff)
 
   def call(column_name, tables) do
     if String.ends_with?(column_name, "_id") do
