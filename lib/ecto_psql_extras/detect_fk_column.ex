@@ -1,5 +1,5 @@
 defmodule EctoPSQLExtras.DetectFkColumn do
-  @plural_rules [
+  defp plural_rules, do: [
     {~r/s$/i, "s"},
     {~r/^(ax|test)is$/i, "\\1es"},
     {~r/(octop|vir)us$/i, "\\1i"},
@@ -62,7 +62,7 @@ defmodule EctoPSQLExtras.DetectFkColumn do
 
   defp apply_plural_rules(word) do
     transformed_word =
-      Enum.reduce(Enum.reverse(@plural_rules), word, fn {rule, replacement}, acc ->
+      Enum.reduce(Enum.reverse(plural_rules()), word, fn {rule, replacement}, acc ->
         if Regex.match?(rule, acc) do
           Regex.replace(rule, acc, replacement)
         else
